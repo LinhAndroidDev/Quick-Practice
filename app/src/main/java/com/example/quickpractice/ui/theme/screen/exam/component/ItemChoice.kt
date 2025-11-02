@@ -15,13 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.Grey
+import com.example.quickpractice.ui.theme.screen.exam.component.math.MixedMathText
 
 @Composable
 fun ItemChoice(
@@ -50,27 +49,21 @@ fun ItemChoice(
             )
         )
 
-        Text(
-            buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = Color.Black,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W500
-                    )
-                ) {
-                    append("$typeChoice. ")
-                }
-                withStyle(
-                    style = SpanStyle(
-                        color = Color.Black,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp
-                    )
-                ) {
-                    append(content)
-                }
-            }
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "$typeChoice. ",
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500
+            )
+            MixedMathText(
+                text = content,
+                fontSize = 16.dp,
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
+            )
+        }
     }
 }

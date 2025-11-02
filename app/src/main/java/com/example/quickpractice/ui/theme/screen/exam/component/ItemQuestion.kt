@@ -2,9 +2,6 @@ package com.example.quickpractice.ui.theme.screen.exam.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,15 +28,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.quickpractice.ui.theme.Blue
 import com.example.quickpractice.ui.theme.Grey
+import com.example.quickpractice.ui.theme.screen.exam.component.math.MixedMathText
 import com.example.quickpractice.ui.theme.screen.exam.model.Choice
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
+import com.example.quickpractice.util.clickView
 
 @Composable
 fun ItemQuestion(question: QuestionModel) {
     var expanded by remember { mutableStateOf(true) }
-    val interactionSource = remember { MutableInteractionSource() }
     var choices by remember { mutableStateOf(arrayListOf(false, false, false, false)) }
 
     Card(
@@ -54,21 +52,23 @@ fun ItemQuestion(question: QuestionModel) {
                 clip = false,
                 ambientColor = Grey.copy(alpha = 0.4f),
                 spotColor = Grey.copy(alpha = 0.4f)
-            )
-            .indication(interactionSource, rememberRipple())
-            .clickable(interactionSource = interactionSource, indication = null) {
-                expanded = !expanded
-            },
+            ),
         colors = CardDefaults.cardColors(containerColor = Blue)
     ) {
         Column {
             Row(
-                modifier = Modifier.padding(vertical = 16.dp, horizontal = 10.dp),
+                modifier = Modifier
+                    .clickView {
+                        expanded = !expanded
+                    }
+                    .padding(vertical = 16.dp, horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 30.dp)) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 30.dp)
+                ) {
                     Text(
                         text = "${question.id}.",
                         color = Color.White,
@@ -76,11 +76,13 @@ fun ItemQuestion(question: QuestionModel) {
                         fontWeight = FontWeight.W500,
                         modifier = Modifier.padding(end = 8.dp)
                     )
-                    Text(
+
+                    MixedMathText(
                         text = question.content ?: "",
+                        fontSize = 16.dp,
                         color = Color.White,
-                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 Icon(
@@ -106,6 +108,15 @@ fun ItemQuestion(question: QuestionModel) {
                         Choice.C to question.optionC,
                         Choice.D to question.optionD,
                     )
+
+                    if (question.contentImage?.isNotEmpty() == true) {
+                        AsyncImage(
+                            model = question.contentImage, // URL ảnh
+                            contentDescription = "Ảnh demo",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    }
 
                     items.forEach { (choice, text) ->
                         ItemChoice(choice.title, text, choices[choice.value]) {
