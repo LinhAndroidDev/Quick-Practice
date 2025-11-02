@@ -1,5 +1,6 @@
 package com.example.quickpractice.ui.theme.screen.exam.component.math
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -361,7 +362,7 @@ object EquationParser {
                 }
                 "sqrt" -> {
                     val radicand = parseSimpleExpression(content, fontSize, textColor, isBold)
-                    elements.add(EquationElement.Radical(radicand = radicand))
+                    elements.add(EquationElement.Radical(radicand = radicand, lineColor = textColor))
                     i++
                 }
                 "sup" -> {
@@ -397,7 +398,6 @@ object EquationParser {
                             EquationElement.Superscript(
                                 base = base,
                                 power = power,
-                                color = textColor
                             )
                         )
                     } else {
@@ -645,7 +645,7 @@ object EquationParser {
                     }
                 } else {
                     // Not a fraction, parse as simple expression
-                    elements.add(parseSimpleExpression(content, fontSize))
+                    elements.add(parseSimpleExpression(content, fontSize, textColor, isBold))
                 }
             }
         }

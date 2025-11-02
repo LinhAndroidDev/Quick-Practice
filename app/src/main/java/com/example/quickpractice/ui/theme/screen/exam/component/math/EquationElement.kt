@@ -246,10 +246,9 @@ sealed class EquationElement {
     data class Superscript(
         val base: EquationElement,
         val power: EquationElement,
-        val powerScaleFactor: Float = 0.5f,
-        val verticalPadding: Float = 15f,
+        val powerScaleFactor: Float = 0.75f,
+        val verticalPadding: Float = 10f,
         val isMain: Boolean = true,
-        val color: Color = Color.Black
     ) : EquationElement() {
 
         override fun measure(): Size {
@@ -361,13 +360,14 @@ sealed class EquationElement {
         // Constants for layout measurements
         companion object {
             private const val RADICAND_HORIZONTAL_PADDING = 10f
-            private const val RADICAND_VERTICAL_PADDING = 8f
+            private const val RADICAND_VERTICAL_PADDING = 15f
             private const val TOP_PADDING = 5f
+            private const val BOTTOM_PADDING = 5f
             private const val TOP_LINE_EXTENSION = 5f
             private const val HOOK_DEPTH_RATIO = 0.15f
             private const val VINCULUM_VERTICAL_OFFSET = 4f
             private const val INDEX_HORIZONTAL_PADDING = 5f
-            private const val INDEX_VERTICAL_PADDING = 6f
+            private const val INDEX_VERTICAL_PADDING = 10f
         }
 
         override fun measure(): Size {
@@ -421,7 +421,7 @@ sealed class EquationElement {
             )
 
             // Calculate dimensions with increased padding
-            val totalHeight = radicandSize.height + RADICAND_VERTICAL_PADDING * 2 + TOP_PADDING
+            val totalHeight = radicandSize.height + RADICAND_VERTICAL_PADDING * 2 + TOP_PADDING - BOTTOM_PADDING
             val symbolWidth = radicandSize.height * 0.7f
 
             // Adjust starting position if index extends to the left
@@ -439,7 +439,7 @@ sealed class EquationElement {
 
             // Radicand position with increased padding
             val radicandX = adjustedTopLeft.x + symbolWidth + RADICAND_HORIZONTAL_PADDING
-            val radicandY = adjustedTopLeft.y + RADICAND_VERTICAL_PADDING + TOP_PADDING
+            val radicandY = adjustedTopLeft.y + RADICAND_VERTICAL_PADDING + TOP_PADDING - BOTTOM_PADDING
 
             // Hook calculations
             val hookStartX = adjustedTopLeft.x
@@ -447,7 +447,7 @@ sealed class EquationElement {
             val hookDepth = totalHeight * HOOK_DEPTH_RATIO
 
             // Vinculum (top horizontal line)
-            val vinculumY = adjustedTopLeft.y + VINCULUM_VERTICAL_OFFSET + TOP_PADDING
+            val vinculumY = adjustedTopLeft.y + VINCULUM_VERTICAL_OFFSET + TOP_PADDING - BOTTOM_PADDING
             val vinculumEndX = radicandX + radicandSize.width + RADICAND_HORIZONTAL_PADDING
 
             // Draw radical symbol using a path
