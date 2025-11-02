@@ -37,6 +37,33 @@ object EquationParser {
         
         while (i < input.length) {
             // Handle newline characters - create line break elements
+            // Check for actual newline character first
+            if (input[i] == '\n') {
+                // Add any accumulated text before the newline
+                if (textBuilder.isNotEmpty()) {
+                    elements.add(
+                        EquationElement.Text(
+                            textBuilder.toString(),
+                            fontSizePx,
+                            textColor = textColor,
+                            isBold = isBold
+                        )
+                    )
+                    textBuilder.clear()
+                }
+                // Add a line break marker (we'll handle this in MixedMathText)
+                elements.add(
+                    EquationElement.Text(
+                        "\n",
+                        fontSizePx,
+                        textColor = textColor,
+                        isBold = isBold
+                    )
+                )
+                i++ // Skip the newline character
+                continue
+            }
+            
             // Check for \n (escaped newline in string)
             if (input[i] == '\\' && i + 1 < input.length && input[i + 1] == 'n') {
                 // Add any accumulated text before the newline

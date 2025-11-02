@@ -125,6 +125,12 @@ fun ItemQuestion(question: QuestionModel) {
                             }.toCollection(ArrayList())
                         }
                     }
+
+                    AnswerView(
+                        correctAnswer = Choice.fromValue(question.correctAnswer),
+                        explain = question.explanation,
+                        imageUrl = question.explanationImage
+                    )
                 }
             }
         }

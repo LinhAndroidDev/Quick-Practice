@@ -142,13 +142,15 @@ fun MixedMathText(
             
             // Check if this is a newline marker
             if (element is EquationElement.Text && element.text == "\n") {
-                // Force a new line
+                // Force a new line - save current line if it has content
                 if (currentLine.isNotEmpty()) {
                     lines.add(currentLine.toList())
                     currentLine.clear()
                     currentLineWidth = 0f
                 }
-                // Add an empty line for spacing (or skip if you want no extra space)
+                // Add an empty line for spacing - this creates a blank line
+                // If there are multiple \n in a row, each one will create a blank line
+                lines.add(mutableListOf())
                 continue
             }
             
@@ -285,7 +287,11 @@ fun MixedMathText(
         
         // Combine elements in each line with proper spacing
         val combinedLines = lines.map { lineElements ->
-            if (lineElements.size == 1) {
+            // Handle empty lines (blank lines created by \n)
+            if (lineElements.isEmpty()) {
+                // Create an empty text element with minimum height to represent a blank line
+                EquationElement.Text("", fontSizePx, textColor = color, isBold = fontWeight >= FontWeight.Bold)
+            } else if (lineElements.size == 1) {
                 lineElements[0]
             } else {
                 var result = lineElements[0]
@@ -331,14 +337,22 @@ fun MixedMathText(
         val lineHeights = combinedLines.map { it.measure().height }
         val maxLineHeight = lineHeights.maxOrNull() ?: 0f
         val lineSpacing = fontSizePx * 0.3f // Spacing between lines
-        val totalHeight = lineHeights.sum() + (lineSpacing * (lines.size - 1).coerceAtLeast(0))
+        // Use combinedLines.size instead of lines.size to account for empty lines created by \n\n
+        val totalLineSpacing = lineSpacing * (combinedLines.size - 1).coerceAtLeast(0)
+        val totalLinesHeight = lineHeights.sum()
+        
+        // Calculate paddings
+        val topPadding = ConvertUtils.DpToPx(8.dp)
+        val bottomPadding = ConvertUtils.DpToPx(8.dp)
+        
+        // Total height = sum of all line heights + line spacing between lines + top padding + bottom padding
+        val totalHeight = totalLinesHeight + totalLineSpacing + topPadding + bottomPadding
         
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(ConvertUtils.PxToDp(totalHeight + ConvertUtils.DpToPx(16.dp))) // Add padding
+                .height(ConvertUtils.PxToDp(totalHeight))
         ) {
-            val topPadding = 8.dp.toPx()
             var currentY = topPadding
             
             // Draw each line - align all lines to a common baseline
@@ -352,7 +366,13 @@ fun MixedMathText(
                 line.draw(this, Offset(0f, currentY))
                 
                 // Move to next line position - add line height plus spacing
-                currentY += lineHeight + lineSpacing
+                // Only add spacing if this is not the last line
+                if (i < combinedLines.size - 1) {
+                    currentY += lineHeight + lineSpacing
+                } else {
+                    // Last line - only add line height, no spacing after
+                    currentY += lineHeight
+                }
             }
         }
     }
