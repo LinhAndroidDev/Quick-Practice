@@ -1,5 +1,6 @@
 package com.example.quickpractice.util
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,4 +44,17 @@ fun SvgImage(url: String) {
         imageLoader = imageLoader,
         contentDescription = null
     )
+}
+
+@SuppressLint("DefaultLocale")
+fun getTimerFormat(totalSeconds: Int): String {
+    val hour = totalSeconds / 3600
+    if (hour > 0) {
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hour, minutes, seconds)
+    }
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return String.format("%02d:%02d", minutes, seconds)
 }
