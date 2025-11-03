@@ -3,11 +3,13 @@ package com.example.quickpractice.ui.theme.screen.exam
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
@@ -33,10 +35,19 @@ import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestion
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
 
+private const val MAX_ITEM_PER_PAGE = 3
+
+/**
+ * Divide the questions evenly into pages, each page has a maximum of 3 questions.
+ * Calculate the number of pages by dividing the number of questions by 3.
+ * If the remainder is not 0 after dividing by 3, add 1 more page.
+ */
 @Composable
 fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltViewModel()) {
     var questionsState by remember { mutableStateOf<List<QuestionModel>>(listOf()) }
     val questions = viewModel.questions.collectAsState().value ?: listOf()
+    val extraPage = if (questionsState.size % MAX_ITEM_PER_PAGE == 0) 0 else 1
+    val pagerState = rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage })
 
     LaunchedEffect(Unit) {
         viewModel.getArgument(navController)
@@ -49,17 +60,30 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
     Column {
         HeaderExam(navController = navController)
 
-        LazyColumn {
-            itemsIndexed(questionsState) { index, question ->
-                ItemQuestion(question, onUpdateQuestion = { q ->
-                    questionsState = questionsState.toMutableList().also {
-                        it[index] = q
-                    }
-                }, onUpdateExpand = {
-                    questionsState = questionsState.toMutableList().also {
-                        it[index] = it[index].copy(expand = !it[index].expand)
-                    }
-                })
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) { page ->
+            val count = if (page == pagerState.pageCount - 1 && questionsState.size % MAX_ITEM_PER_PAGE != 0) {
+                questionsState.size % MAX_ITEM_PER_PAGE
+            } else {
+                3
+            }
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(count) { index ->
+                    val position = index + page * 3
+                    ItemQuestion(questionsState[position], onUpdateQuestion = { q ->
+                        questionsState = questionsState.toMutableList().also {
+                            it[position] = q
+                        }
+                    }, onUpdateExpand = {
+                        questionsState = questionsState.toMutableList().also {
+                            it[position] = it[position].copy(expand = !it[position].expand)
+                        }
+                    })
+                }
             }
         }
     }

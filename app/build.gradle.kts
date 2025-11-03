@@ -88,4 +88,6 @@ dependencies {
     //Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+
+    implementation(libs.androidx.foundation)
 }
