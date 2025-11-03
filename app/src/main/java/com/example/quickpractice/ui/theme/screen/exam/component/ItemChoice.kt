@@ -36,18 +36,25 @@ fun ItemChoice(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val corrected = isCorrected == true && selectChoice?.value == choice.value
     val isWrong = isAnswered && selectChoice?.value == choice.value
     val isCorrectForWrong = isAnswered && selectChoice?.value != choice.value && correctAnswer.value == choice.value
-    val isSelected = (isCorrected == true && selectChoice?.value == choice.value)
-            || isWrong
-            || isCorrectForWrong
+    val isSelected = corrected || isWrong
+
+    val colorText = if (corrected || isCorrectForWrong) {
+        Green
+    } else if (isWrong) {
+        Red
+    } else {
+        Color.Black
+    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
             .clickable(interactionSource = interactionSource, indication = null) {
-                onClick()
+                if (!isAnswered) onClick()
             }
             .indication(interactionSource, rememberRipple()),
         verticalAlignment = Alignment.CenterVertically
@@ -57,7 +64,7 @@ fun ItemChoice(
             onClick = { if (!isAnswered) onClick() },
             colors = RadioButtonDefaults.colors(
                 selectedColor = if (isCorrected == true || isCorrectForWrong) Green else Red,
-                unselectedColor = Grey
+                unselectedColor = if (isCorrectForWrong) Green else Grey
             )
         )
 
@@ -66,14 +73,14 @@ fun ItemChoice(
         ) {
             Text(
                 text = "${choice.title}. ",
-                color = Color.Black,
+                color = colorText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W500
             )
             MixedMathText(
                 text = content,
                 fontSize = 16.dp,
-                color = Color.Black,
+                color = colorText,
                 fontWeight = FontWeight.Normal,
             )
         }
