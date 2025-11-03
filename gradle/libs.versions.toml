@@ -4,7 +4,6 @@ coilCompose = "2.6.0"
 converterGson = "3.0.0"
 hiltAndroid = "2.57.1"
 hiltNavigationCompose = "1.2.0"
-katexview = "1.0.3"
 kotlin = "2.1.0"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -41,7 +40,6 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-katexview = { module = "io.github.joelkanyi:katexview", version.ref = "katexview" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

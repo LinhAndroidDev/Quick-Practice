@@ -31,7 +31,8 @@ class ExamRepositoryImpl @Inject constructor(private val apiService: ApiService)
                         subject = SubjectModel(
                             id = q.subject?.id ?: 0,
                             nameSubject = q.subject?.nameSubject ?: ""
-                        )
+                        ),
+                        answer = null
                     )
                 },
                 subject = SubjectModel(

@@ -20,16 +20,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.Grey
+import com.example.quickpractice.ui.theme.Red
 import com.example.quickpractice.ui.theme.screen.exam.component.math.MixedMathText
+import com.example.quickpractice.ui.theme.screen.exam.model.Choice
 
 @Composable
 fun ItemChoice(
-    typeChoice: String,
+    choice: Choice,
     content: String,
-    selected: Boolean = false,
+    selectChoice: Choice?,
+    correctAnswer: Choice,
+    isCorrected: Boolean?,
+    isAnswered: Boolean = false,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
+    val isWrong = isAnswered && selectChoice?.value == choice.value
+    val isCorrectForWrong = isAnswered && selectChoice?.value != choice.value && correctAnswer.value == choice.value
+    val isSelected = (isCorrected == true && selectChoice?.value == choice.value)
+            || isWrong
+            || isCorrectForWrong
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,10 +53,10 @@ fun ItemChoice(
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
-            selected = selected,
-            onClick = { onClick() },
+            selected = isSelected,
+            onClick = { if (!isAnswered) onClick() },
             colors = RadioButtonDefaults.colors(
-                selectedColor = Green,
+                selectedColor = if (isCorrected == true || isCorrectForWrong) Green else Red,
                 unselectedColor = Grey
             )
         )
@@ -53,7 +65,7 @@ fun ItemChoice(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$typeChoice. ",
+                text = "${choice.title}. ",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W500
