@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.Orange
 import com.example.quickpractice.ui.theme.Red
+import com.example.quickpractice.ui.theme.screen.exam.component.DialogConfirmSave
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestion
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
@@ -104,6 +105,7 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
 @Composable
 private fun HeaderExam(navController: NavController, pageState: PagerState, duration: Int, onFinished: () -> Unit = {}) {
     var timeLeft by remember { mutableStateOf(0) }
+    var showDialogConfirmSave by remember { mutableStateOf(false) }
 
     LaunchedEffect(duration) {
         timeLeft = duration
@@ -126,13 +128,14 @@ private fun HeaderExam(navController: NavController, pageState: PagerState, dura
         verticalAlignment = CenterVertically
     ) {
         Icon(
-            Icons.Filled.KeyboardArrowLeft, contentDescription = "Back",
+            painter = painterResource(R.drawable.ic_save), contentDescription = "Save",
             modifier = Modifier
-                .size(40.dp)
+                .size(18.dp)
                 .clickView {
-                    navController.popBackStack()
+                    showDialogConfirmSave = true
                 }
                 .padding(start = 10.dp, end = 15.dp),
+            tint = Color.Black
         )
 
         Text(
@@ -159,6 +162,16 @@ private fun HeaderExam(navController: NavController, pageState: PagerState, dura
             modifier = Modifier.padding(start = 5.dp)
         )
     }
+
+    DialogConfirmSave(
+        showDialog = showDialogConfirmSave,
+        onDismiss = {
+            showDialogConfirmSave = false
+        },
+        onConfirm = {
+            navController.popBackStack()
+        }
+    )
 }
 
 @Preview
