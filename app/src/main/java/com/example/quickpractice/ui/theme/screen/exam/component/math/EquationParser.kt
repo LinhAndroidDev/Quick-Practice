@@ -1,6 +1,5 @@
 package com.example.quickpractice.ui.theme.screen.exam.component.math
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp

@@ -11,8 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,7 +66,11 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
     }
 
     Column {
-        HeaderExam(navController = navController, pageState = pagerState, viewModel.durationSeconds.value) {
+        HeaderExam(
+            navController = navController,
+            pageState = pagerState,
+            viewModel.durationSeconds.collectAsState().value
+        ) {
 
         }
 
@@ -142,7 +144,9 @@ private fun HeaderExam(navController: NavController, pageState: PagerState, dura
             text = "Trang ${pageState.currentPage + 1}",
             fontSize = 16.sp,
             fontWeight = FontWeight.W600,
-            modifier = Modifier.padding(start = 20.dp),
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .weight(1f),
             textAlign = TextAlign.Center
         )
 
@@ -159,7 +163,7 @@ private fun HeaderExam(navController: NavController, pageState: PagerState, dura
             color = Red,
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(start = 5.dp)
+            modifier = Modifier.padding(start = 5.dp, end = 20.dp)
         )
     }
 
