@@ -306,37 +306,45 @@ sealed class EquationElement {
     data class Subscript(
         val base: EquationElement,
         val sub: EquationElement,
-        val subScaleFactor: Float = 0.5f,
-        val topPadding: Float = 20f,
-        val startPadding: Float = 20f
+        val subScaleFactor: Float = 0.6f,
+        val topPadding: Float = 4f,
+        val startPadding: Float = 2f
     ) : EquationElement() {
         override fun measure(): Size {
             val baseSize = base.measure()
             val subSize = sub.measure()
-            // Scale down the subscript
-            val scaledSubSize = subSize * subScaleFactor
+            val scaledSubWidth = subSize.width * subScaleFactor
+            val scaledSubHeight = subSize.height * subScaleFactor
 
-            return baseSize + scaledSubSize
+            val width = baseSize.width + startPadding + scaledSubWidth
+            val height = max(baseSize.height, baseSize.height + topPadding + scaledSubHeight)
+            return Size(width, height)
         }
 
         override fun draw(drawScope: DrawScope, topLeft: Offset) {
             val baseSize = base.measure()
-
-            // Draw the base
-            base.draw(drawScope, topLeft)
-
-            // Position the subscript
-            val topLeftForSub = Offset(
-                x = topLeft.x + baseSize.width + startPadding,
-                y = topLeft.y + baseSize.height + topPadding
+            val subSize = sub.measure()
+            val scaledSubHeight = subSize.height * subScaleFactor
+            val topLeftNew = Offset(
+                x = topLeft.x,
+                y = topLeft.y + 8f
             )
 
-            // Draw the subscript with scaling
-            drawScope.scale(subScaleFactor) {
-                sub.draw(
-                    this,
-                    topLeftForSub
-                )
+            // Draw the base element
+            base.draw(drawScope, topLeftNew)
+
+            // Position the subscript relative to the base
+            val subX = topLeftNew.x + baseSize.width + startPadding
+            val subY = topLeftNew.y + baseSize.height - scaledSubHeight + topPadding
+            val subTopLeft = Offset(subX, subY)
+
+            // Draw the subscript with scaling anchored at its top-left position
+            drawScope.scale(
+                scaleX = subScaleFactor,
+                scaleY = subScaleFactor,
+                pivot = subTopLeft
+            ) {
+                sub.draw(this, subTopLeft)
             }
         }
     }

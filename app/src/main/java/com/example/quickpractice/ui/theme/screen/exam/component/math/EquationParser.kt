@@ -226,7 +226,7 @@ object EquationParser {
         }
         
         // Parse expression by splitting into parts and handling each LaTeX command
-        val parts = mutableListOf<Pair<String, String>>() // (content, type: "text", "sqrt", "sup", "simpleSup")
+        val parts = mutableListOf<Pair<String, String>>() // (content, type: "text", "sqrt", "sup", "simpleSup", "sub")
         
         var i = 0
         while (i < trimmed.length) {
@@ -325,6 +325,65 @@ object EquationParser {
                     break
                 }
             }
+
+            // Check for subscript with braces: base_{sub}
+            if (trimmed[i] == '_' && i + 1 < trimmed.length && trimmed[i + 1] == '{') {
+                val baseEnd = i
+                val base = trimmed.substring(0, baseEnd)
+
+                var braceCount = 0
+                var j = i + 2
+                var subEnd = -1
+                while (j < trimmed.length) {
+                    when (trimmed[j]) {
+                        '{' -> braceCount++
+                        '}' -> {
+                            if (braceCount == 0) {
+                                subEnd = j
+                                break
+                            }
+                            braceCount--
+                        }
+                    }
+                    j++
+                }
+
+                if (subEnd != -1) {
+                    val subContent = trimmed.substring(i + 2, subEnd)
+                    val after = trimmed.substring(subEnd + 1)
+
+                    if (base.isNotEmpty()) {
+                        parts.add(Pair(base, "text"))
+                    }
+                    parts.add(Pair(subContent, "sub"))
+                    if (after.isNotEmpty()) {
+                        return combinePartsWithRemaining(parts, after, fontSize, textColor, isBold)
+                    }
+                    break
+                }
+            }
+
+            // Check for simple subscript: base_index (single char base and index)
+            if (i > 0 && trimmed[i] == '_' &&
+                i + 1 < trimmed.length && trimmed[i + 1].isLetterOrDigit()
+            ) {
+                val baseChar = trimmed.substring(i - 1, i)
+                if (baseChar.matches(Regex("[a-zA-Z0-9]"))) {
+                    val before = trimmed.substring(0, i - 1)
+                    val subChar = trimmed.substring(i + 1, i + 2)
+                    val after = trimmed.substring(i + 2)
+
+                    if (before.isNotEmpty()) {
+                        parts.add(Pair(before, "text"))
+                    }
+                    parts.add(Pair(baseChar, "text"))
+                    parts.add(Pair(subChar, "simpleSub"))
+                    if (after.isNotEmpty()) {
+                        return combinePartsWithRemaining(parts, after, fontSize, textColor, isBold)
+                    }
+                    break
+                }
+            }
             
             i++
         }
@@ -349,8 +408,7 @@ object EquationParser {
         isBold: Boolean = false
     ): EquationElement {
         val parsedParts = parseParts(parts, fontSize, textColor, isBold)
-        val remainingParsed = parseSimpleExpression(remaining, fontSize, textColor, isBold)
-        return combineHorizontally(listOf(parsedParts, remainingParsed), fontSize)
+        return attachRemaining(parsedParts, remaining, fontSize, textColor, isBold)
     }
     
     /**
@@ -438,6 +496,41 @@ object EquationParser {
                     }
                     i++
                 }
+                "sub", "simpleSub" -> {
+                    if (elements.isNotEmpty()) {
+                        val base = elements.removeAt(elements.size - 1)
+                        val subFontSize = fontSize * 0.7f
+                        val subElement = if (type == "simpleSub") {
+                            EquationElement.Text(
+                                content,
+                                subFontSize,
+                                textColor = textColor,
+                                isBold = isBold
+                            )
+                        } else {
+                            parseSimpleExpression(content, subFontSize, textColor, isBold)
+                        }
+                        elements.add(
+                            EquationElement.Subscript(
+                                base = base,
+                                sub = subElement,
+                                subScaleFactor = 0.7f,
+                                topPadding = fontSize * 0.15f,
+                                startPadding = fontSize * 0.05f
+                            )
+                        )
+                    } else {
+                        elements.add(
+                            EquationElement.Text(
+                                "_$content",
+                                fontSize,
+                                textColor = textColor,
+                                isBold = isBold
+                            )
+                        )
+                    }
+                    i++
+                }
                 else -> {
                     elements.add(
                         EquationElement.Text(
@@ -453,6 +546,123 @@ object EquationParser {
         }
         
         return if (elements.size == 1) elements[0] else combineHorizontally(elements, fontSize)
+    }
+
+    /**
+     * Attaches remaining string content (like superscripts or subscripts) to an existing element.
+     */
+    private fun attachRemaining(
+        baseElement: EquationElement,
+        remaining: String,
+        fontSize: Float,
+        textColor: Color = Color.Black,
+        isBold: Boolean = false
+    ): EquationElement {
+        var currentElement = baseElement
+        var rest = remaining
+
+        while (rest.isNotEmpty()) {
+            val leadingWhitespace = rest.takeWhile { it.isWhitespace() }
+            if (leadingWhitespace.isNotEmpty()) {
+                currentElement = combineHorizontally(
+                    listOf(
+                        currentElement,
+                        EquationElement.Text(
+                            leadingWhitespace,
+                            fontSize,
+                            textColor = textColor,
+                            isBold = isBold
+                        )
+                    ),
+                    fontSize
+                )
+                rest = rest.drop(leadingWhitespace.length)
+                continue
+            }
+
+            if (rest.startsWith("^")) {
+                val commandResult = extractCommandContent(rest, 1)
+                if (commandResult != null) {
+                    val (content, after) = commandResult
+                    val power = parseSimpleExpression(content, fontSize * 0.7f, textColor, isBold)
+                    currentElement = EquationElement.Superscript(
+                        base = currentElement,
+                        power = power
+                    )
+                    rest = after
+                    continue
+                } else {
+                    break
+                }
+            }
+
+            if (rest.startsWith("_")) {
+                val commandResult = extractCommandContent(rest, 1)
+                if (commandResult != null) {
+                    val (content, after) = commandResult
+                    val subElement = parseSimpleExpression(content, fontSize * 0.7f, textColor, isBold)
+                    currentElement = EquationElement.Subscript(
+                        base = currentElement,
+                        sub = subElement,
+                        subScaleFactor = 0.7f,
+                        topPadding = fontSize * 0.15f,
+                        startPadding = fontSize * 0.05f
+                    )
+                    rest = after
+                    continue
+                } else {
+                    break
+                }
+            }
+
+            val remainingElement = parseSimpleExpression(rest, fontSize, textColor, isBold)
+            currentElement = combineHorizontally(listOf(currentElement, remainingElement), fontSize)
+            return currentElement
+        }
+
+        return currentElement
+    }
+
+    /**
+     * Extracts the content of a command (e.g., ^{...} or _{...}) and returns the content along with the remaining string.
+     */
+    private fun extractCommandContent(source: String, contentStartIndex: Int): Pair<String, String>? {
+        if (contentStartIndex >= source.length) return null
+
+        return if (source[contentStartIndex] == '{') {
+            var braceCount = 0
+            var i = contentStartIndex + 1
+            var endIndex = -1
+            while (i < source.length) {
+                when (source[i]) {
+                    '{' -> braceCount++
+                    '}' -> {
+                        if (braceCount == 0) {
+                            endIndex = i
+                            break
+                        }
+                        braceCount--
+                    }
+                }
+                i++
+            }
+            if (endIndex == -1) return null
+            val content = source.substring(contentStartIndex + 1, endIndex)
+            val remaining = if (endIndex + 1 < source.length) {
+                source.substring(endIndex + 1)
+            } else {
+                ""
+            }
+            Pair(content, remaining)
+        } else {
+            val content = source.substring(contentStartIndex, contentStartIndex + 1)
+            val remaining = if (contentStartIndex + 1 < source.length) {
+                source.substring(contentStartIndex + 1)
+            } else {
+                ""
+            }
+            Pair(content, remaining)
+        }
     }
     
     /**
