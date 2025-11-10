@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +38,7 @@ import com.example.quickpractice.ui.theme.Orange
 import com.example.quickpractice.ui.theme.Red
 import com.example.quickpractice.ui.theme.screen.exam.component.DialogConfirmSave
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestion
+import com.example.quickpractice.ui.theme.screen.exam.component.LastPageView
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
 import com.example.quickpractice.util.getTimerFormat
@@ -55,7 +57,7 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
     val questions = viewModel.questions.collectAsState().value ?: listOf()
     val extraPage = if (questionsState.size % MAX_ITEM_PER_PAGE == 0) 0 else 1
     val pagerState =
-        rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage })
+        rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage + 1 })
 
     LaunchedEffect(Unit) {
         viewModel.getArgument(navController)
@@ -80,34 +82,49 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                 .weight(1f)
                 .fillMaxWidth()
         ) { page ->
-            val count =
-                if (page == pagerState.pageCount - 1 && questionsState.size % MAX_ITEM_PER_PAGE != 0) {
-                    questionsState.size % MAX_ITEM_PER_PAGE
-                } else {
-                    3
+            if (page < pagerState.pageCount - 1) {
+                val count =
+                    if (page == pagerState.pageCount - 2 && questionsState.size % MAX_ITEM_PER_PAGE != 0) {
+                        questionsState.size % MAX_ITEM_PER_PAGE
+                    } else {
+                        3
+                    }
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(count) { index ->
+                        val position = index + page * MAX_ITEM_PER_PAGE
+                        ItemQuestion(questionsState[position], onUpdateQuestion = { q ->
+                            questionsState = questionsState.toMutableList().also {
+                                it[position] = q
+                            }
+                        }, onUpdateExpand = {
+                            questionsState = questionsState.toMutableList().also {
+                                it[position] = it[position].copy(expand = !it[position].expand)
+                            }
+                        })
+                    }
                 }
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(count) { index ->
-                    val position = index + page * MAX_ITEM_PER_PAGE
-                    ItemQuestion(questionsState[position], onUpdateQuestion = { q ->
-                        questionsState = questionsState.toMutableList().also {
-                            it[position] = q
-                        }
-                    }, onUpdateExpand = {
-                        questionsState = questionsState.toMutableList().also {
-                            it[position] = it[position].copy(expand = !it[position].expand)
-                        }
-                    })
-                }
+            } else {
+                // Last page: submit button
+                LastPageView()
             }
         }
     }
 }
 
 @Composable
-private fun HeaderExam(navController: NavController, pageState: PagerState, duration: Int, onFinished: () -> Unit = {}) {
-    var timeLeft by remember { mutableStateOf(0) }
+private fun HeaderExam(
+    navController: NavController,
+    pageState: PagerState,
+    duration: Int,
+    onFinished: () -> Unit = {}
+) {
+    var timeLeft by remember { mutableIntStateOf(0) }
     var showDialogConfirmSave by remember { mutableStateOf(false) }
+    val currentPage = if (pageState.currentPage == pageState.pageCount - 1) {
+        "Trang cuối"
+    } else {
+        "Trang ${pageState.currentPage + 1}"
+    }
 
     LaunchedEffect(duration) {
         timeLeft = duration
@@ -141,7 +158,7 @@ private fun HeaderExam(navController: NavController, pageState: PagerState, dura
         )
 
         Text(
-            text = "Trang ${pageState.currentPage + 1}",
+            text = currentPage,
             fontSize = 16.sp,
             fontWeight = FontWeight.W600,
             modifier = Modifier
@@ -163,7 +180,26 @@ private fun HeaderExam(navController: NavController, pageState: PagerState, dura
             color = Red,
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(start = 5.dp, end = 20.dp)
+            modifier = Modifier.padding(start = 5.dp)
+        )
+
+        Icon(
+            painter = painterResource(R.drawable.ic_setting), contentDescription = "list",
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .size(25.dp),
+            tint = Color.Black
+        )
+
+        Icon(
+            painter = painterResource(R.drawable.ic_list), contentDescription = "list",
+            modifier = Modifier
+                .padding(start = 20.dp, end = 10.dp)
+                .size(25.dp)
+                .clickView {
+
+                },
+            tint = Color.Black
         )
     }
 

@@ -72,7 +72,7 @@ fun ItemExam(exam: ExamModel, onClick: () -> Unit) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_list),
+                            painter = painterResource(R.drawable.ic_list_done),
                             contentDescription = "list",
                             modifier = Modifier
                                 .padding(start = 10.dp)
