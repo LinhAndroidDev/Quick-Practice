@@ -14,6 +14,7 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 @Composable
 fun Modifier.clickView(onClick: () -> Unit): Modifier {
     val interactionSource = remember { MutableInteractionSource() }

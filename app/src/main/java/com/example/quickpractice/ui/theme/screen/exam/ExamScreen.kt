@@ -36,9 +36,10 @@ import androidx.navigation.NavController
 import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.Orange
 import com.example.quickpractice.ui.theme.Red
-import com.example.quickpractice.ui.theme.screen.exam.component.DialogConfirmSave
+import com.example.quickpractice.ui.theme.screen.exam.component.dialog.DialogConfirmSave
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestion
 import com.example.quickpractice.ui.theme.screen.exam.component.LastPageView
+import com.example.quickpractice.ui.theme.screen.exam.component.dialog.DialogListQuestion
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
 import com.example.quickpractice.util.getTimerFormat
@@ -120,6 +121,7 @@ private fun HeaderExam(
 ) {
     var timeLeft by remember { mutableIntStateOf(0) }
     var showDialogConfirmSave by remember { mutableStateOf(false) }
+    var showDialogListQuestionPreview by remember { mutableStateOf(false) }
     val currentPage = if (pageState.currentPage == pageState.pageCount - 1) {
         "Trang cuối"
     } else {
@@ -194,11 +196,11 @@ private fun HeaderExam(
         Icon(
             painter = painterResource(R.drawable.ic_list), contentDescription = "list",
             modifier = Modifier
-                .padding(start = 20.dp, end = 10.dp)
                 .size(25.dp)
                 .clickView {
-
-                },
+                    showDialogListQuestionPreview = true
+                }
+                .padding(start = 20.dp, end = 10.dp),
             tint = Color.Black
         )
     }
@@ -212,6 +214,10 @@ private fun HeaderExam(
             navController.popBackStack()
         }
     )
+
+    DialogListQuestion(showDialog = showDialogListQuestionPreview, onDismiss = {
+        showDialogListQuestionPreview = false
+    }, onSubmit = {})
 }
 
 @Preview
