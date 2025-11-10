@@ -44,4 +44,19 @@ data class QuestionModel(
     fun isAnswered(): Boolean {
         return answer != null
     }
+
+    fun getAnswers(): Map<Choice, Correct> {
+        return Choice.entries.associateWith { choice ->
+            when {
+                // Đây là đáp án đúng
+                choice.value == correctAnswer && isAnswered() -> Correct.CORRECT
+
+                // Đây là đáp án người dùng chọn nhưng sai
+                choice == answer -> if (isCorrect()) Correct.CORRECT else Correct.INCORRECT
+
+                // Các lựa chọn còn lại
+                else -> Correct.NO_ANSWER
+            }
+        }
+    }
 }

@@ -22,12 +22,14 @@ import androidx.compose.ui.unit.sp
 import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.screen.exam.model.Choice
 import com.example.quickpractice.ui.theme.screen.exam.model.Correct
+import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 
 @Composable
-fun ItemQuestionPreview() {
+fun ItemQuestionPreview(question: QuestionModel) {
     Row(modifier = Modifier.padding(bottom = 15.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        val answers = question.getAnswers()
         Text(
-            "32.",
+            "${question.id}.",
             color = Color.Black,
             fontSize = 14.sp,
             fontWeight = FontWeight.W500,
@@ -36,16 +38,16 @@ fun ItemQuestionPreview() {
         )
 
         Box(modifier = Modifier.weight(1f)) {
-            ChoiceView(Correct.CORRECT, Choice.A)
+            ChoiceView(answers[Choice.A] ?: Correct.NO_ANSWER, Choice.A)
         }
         Box(modifier = Modifier.weight(1f)) {
-            ChoiceView(Correct.NO_ANSWER, Choice.B)
+            ChoiceView(answers[Choice.B] ?: Correct.NO_ANSWER, Choice.B)
         }
         Box(modifier = Modifier.weight(1f)) {
-            ChoiceView(Correct.NO_ANSWER, Choice.C)
+            ChoiceView(answers[Choice.C] ?: Correct.NO_ANSWER, Choice.C)
         }
         Box(modifier = Modifier.weight(1f)) {
-            ChoiceView(Correct.INCORRECT, Choice.D)
+            ChoiceView(answers[Choice.D] ?: Correct.NO_ANSWER, Choice.D)
         }
     }
 }
@@ -83,5 +85,5 @@ private fun ChoiceView(correct: Correct, choice: Choice) {
 @Preview
 @Composable
 fun ItemQuestionPreview_Preview() {
-    ItemQuestionPreview()
+
 }

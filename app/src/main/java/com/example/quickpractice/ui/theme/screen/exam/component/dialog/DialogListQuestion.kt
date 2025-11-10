@@ -5,12 +5,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
@@ -26,14 +29,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.quickpractice.ui.theme.Green
+import com.example.quickpractice.ui.theme.GreyEF
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestionPreview
 import com.example.quickpractice.ui.theme.screen.exam.component.ShadowCommon
+import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 
 @Composable
 fun DialogListQuestion(
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
+    questionsState: List<QuestionModel>,
 ) {
     if (!showDialog) return
     Dialog(
@@ -64,8 +70,19 @@ fun DialogListQuestion(
                     .weight(1f)
                     .padding(top = 15.dp)
             ) {
-                items(20) {
-                    ItemQuestionPreview()
+                itemsIndexed(questionsState) { index, item ->
+                    Column {
+                        ItemQuestionPreview(item)
+                        if (index > 0 && index < questionsState.size - 1 && (index + 1) % 3 == 0) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(bottom = 15.dp)
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(GreyEF)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -138,6 +155,7 @@ fun DialogListQuestionPreview() {
     DialogListQuestion(
         showDialog = true,
         onDismiss = {},
-        onSubmit = {}
+        onSubmit = {},
+        questionsState = listOf()
     )
 }
