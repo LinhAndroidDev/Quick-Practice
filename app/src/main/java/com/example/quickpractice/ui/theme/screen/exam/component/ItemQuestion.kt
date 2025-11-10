@@ -29,6 +29,7 @@ import com.example.quickpractice.ui.theme.Blue
 import com.example.quickpractice.ui.theme.Grey
 import com.example.quickpractice.ui.theme.screen.exam.component.math.MixedMathText
 import com.example.quickpractice.ui.theme.screen.exam.model.Choice
+import com.example.quickpractice.ui.theme.screen.exam.model.Correct
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
 
@@ -38,6 +39,7 @@ fun ItemQuestion(
     onUpdateExpand: () -> Unit,
     onUpdateQuestion: (QuestionModel) -> Unit
 ) {
+    val answers = question.getAnswers()
 
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -119,10 +121,9 @@ fun ItemQuestion(
                     items.forEach { (choice, text) ->
                         ItemChoice(
                             choice = choice,
+                            correct = answers[choice] ?: Correct.NO_ANSWER,
                             content = text,
                             selectChoice = question.answer,
-                            correctAnswer = Choice.fromValue(question.correctAnswer),
-                            isCorrected = question.isCorrect(),
                             isAnswered = question.isAnswered(),
                         ) {
                             onUpdateQuestion.invoke(question.copyWith(answer = choice))
