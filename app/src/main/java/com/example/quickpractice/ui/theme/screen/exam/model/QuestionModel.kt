@@ -68,6 +68,7 @@ data class QuestionModel(
                 examId = examId,
                 userId = userId,
                 numberCorrectAnswers = questions.filter { q -> q.isCorrect() }.size,
+                numberWrongAnswers = questions.filter { q -> q.isAnswered() && !q.isCorrect() }.size,
                 totalQuestions = questions.size,
                 examAnswers = questions.map { q ->
                     ExamAnswerRequest(
