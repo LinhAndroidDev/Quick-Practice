@@ -1,6 +1,8 @@
 package com.example.quickpractice.ui.theme.screen.exam.model
 
 import android.os.Parcelable
+import com.example.quickpractice.data.dto.ExamAnswerRequest
+import com.example.quickpractice.data.dto.ExamResultRequest
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -57,6 +59,23 @@ data class QuestionModel(
                 // Các lựa chọn còn lại
                 else -> Correct.NO_ANSWER
             }
+        }
+    }
+
+    companion object {
+        fun toExamResultRequest(examId: Int, userId: Int, questions: List<QuestionModel>): ExamResultRequest {
+            return ExamResultRequest(
+                examId = examId,
+                userId = userId,
+                numberCorrectAnswers = questions.filter { q -> q.isCorrect() }.size,
+                totalQuestions = questions.size,
+                examAnswers = questions.map { q ->
+                    ExamAnswerRequest(
+                        questionId = q.id,
+                        chosenAnswer = q.answer?.value ?: -1
+                    )
+                }
+            )
         }
     }
 }

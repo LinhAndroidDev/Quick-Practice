@@ -1,6 +1,7 @@
 package com.example.quickpractice.ui.theme.screen.exam
 
 import HeaderExam
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,14 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
     val extraPage = if (questionsState.size % MAX_ITEM_PER_PAGE == 0) 0 else 1
     val pagerState =
         rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage + 1 })
+    val message by viewModel.message.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(message) {
+        if (message.isNotEmpty()) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getArgument(navController)
@@ -51,10 +60,14 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
             navController = navController,
             pageState = pagerState,
             viewModel.durationSeconds.collectAsState().value,
-            questionsState
-        ) {
+            questionsState,
+            onSubmit = {
+                viewModel.submitExam(questionsState)
+            },
+            onFinished = {
 
-        }
+            }
+        )
 
         HorizontalPager(
             state = pagerState,
@@ -85,7 +98,9 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                 }
             } else {
                 // Last page: submit button
-                LastPageView()
+                LastPageView {
+                    viewModel.submitExam(questionsState)
+                }
             }
         }
     }

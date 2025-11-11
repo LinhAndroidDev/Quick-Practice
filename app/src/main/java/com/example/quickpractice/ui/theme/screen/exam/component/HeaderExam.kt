@@ -38,7 +38,8 @@ fun HeaderExam(
     pageState: PagerState,
     duration: Int,
     questionsState: List<QuestionModel>,
-    onFinished: () -> Unit = {}
+    onFinished: () -> Unit = {},
+    onSubmit: () -> Unit = {}
 ) {
     var timeLeft by remember { mutableIntStateOf(0) }
     var showDialogConfirmSave by remember { mutableStateOf(false) }
@@ -138,5 +139,5 @@ fun HeaderExam(
 
     DialogListQuestion(showDialog = showDialogListQuestionPreview, onDismiss = {
         showDialogListQuestionPreview = false
-    }, onSubmit = {}, questionsState)
+    }, onSubmit = { onSubmit.invoke() }, questionsState)
 }

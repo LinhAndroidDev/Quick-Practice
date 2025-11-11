@@ -1,6 +1,8 @@
 package com.example.quickpractice.data.repository
 
 import com.example.quickpractice.data.ApiService
+import com.example.quickpractice.data.dto.ExamResultRequest
+import com.example.quickpractice.data.response.ExamResultResponse
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.ui.theme.screen.exam.model.SubjectModel
@@ -42,5 +44,9 @@ class ExamRepositoryImpl @Inject constructor(private val apiService: ApiService)
             )
         }
         return Response.success(exam)
+    }
+
+    override suspend fun addExamResult(examResultRequest: ExamResultRequest): Response<ExamResultResponse> {
+        return apiService.addExamResult(examResultRequest)
     }
 }
