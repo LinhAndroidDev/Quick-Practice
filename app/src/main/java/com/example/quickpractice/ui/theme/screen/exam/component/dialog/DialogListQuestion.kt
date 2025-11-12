@@ -31,7 +31,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.GreyEF
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestionPreview
-import com.example.quickpractice.ui.theme.screen.exam.component.ShadowCommon
+import com.example.quickpractice.ui.theme.component.ShadowCommon
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 
 @Composable

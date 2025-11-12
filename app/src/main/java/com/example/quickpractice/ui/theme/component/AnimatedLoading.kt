@@ -1,4 +1,4 @@
-package com.example.quickpractice.ui.theme.screen.exam.component
+package com.example.quickpractice.ui.theme.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

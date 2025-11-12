@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.quickpractice.ui.theme.screen.exam.component.AnimatedLoading
+import com.example.quickpractice.ui.theme.component.AnimatedLoading
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestion
 import com.example.quickpractice.ui.theme.screen.exam.component.LastPageView
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
