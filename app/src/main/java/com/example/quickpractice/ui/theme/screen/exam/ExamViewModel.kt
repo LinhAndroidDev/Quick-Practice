@@ -5,12 +5,20 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.quickpractice.data.repository.ExamRepository
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
+import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class ApiState {
+    class Success(val data: ExamResultModel?) : ApiState()
+    class Failure(val message: String) : ApiState()
+    class Loading() : ApiState()
+    class Idle : ApiState()
+}
 
 @HiltViewModel
 class ExamViewModel @Inject constructor(private val examRepository: ExamRepository) : ViewModel() {
@@ -19,8 +27,8 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
     private val _durationSeconds: MutableStateFlow<Int> = MutableStateFlow(0)
     val durationSeconds = _durationSeconds.asStateFlow()
     var exam: ExamModel? = null
-    private val _message: MutableStateFlow<String> = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _state = MutableStateFlow<ApiState>(ApiState.Idle())
+    val state = _state.asStateFlow()
 
     fun getArgument(navController: NavController) {
         exam = navController.previousBackStackEntry
@@ -36,16 +44,17 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
             userId = 3,
             questions = questions
         )
+        _state.value = ApiState.Loading()
         try {
             val result = examRepository.addExamResult(examResultRequest)
             if (result.isSuccessful) {
                 val responseBody = result.body()
-                _message.value = responseBody?.message ?: ""
+                _state.value = ApiState.Success(responseBody)
             } else {
-                _message.value = "Failed to submit exam result."
+                _state.value = ApiState.Failure("Failed to submit exam result.")
             }
         } catch (e: Exception) {
-            _message.value = e.message.toString()
+            _state.value = ApiState.Failure(e.message.toString())
         }
     }
 }

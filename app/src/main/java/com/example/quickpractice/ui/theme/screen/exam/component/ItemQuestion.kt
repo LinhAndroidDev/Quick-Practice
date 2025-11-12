@@ -19,19 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.quickpractice.ui.theme.Blue
-import com.example.quickpractice.ui.theme.Grey
 import com.example.quickpractice.ui.theme.screen.exam.component.math.MixedMathText
 import com.example.quickpractice.ui.theme.screen.exam.model.Choice
 import com.example.quickpractice.ui.theme.screen.exam.model.Correct
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
+import com.example.quickpractice.util.shadowCommon
 
 @Composable
 fun ItemQuestion(
@@ -46,13 +45,7 @@ fun ItemQuestion(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .shadow(
-                elevation = 10.dp,
-                shape = RoundedCornerShape(16.dp),
-                clip = false,
-                ambientColor = Grey.copy(alpha = 0.4f),
-                spotColor = Grey.copy(alpha = 0.4f)
-            ),
+            .shadowCommon(),
         colors = CardDefaults.cardColors(containerColor = Blue)
     ) {
         Column {

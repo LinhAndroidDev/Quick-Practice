@@ -1,5 +1,9 @@
 package com.example.quickpractice.data.response
 
+import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
+import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
+import com.example.quickpractice.ui.theme.screen.exam.model.SubjectModel
+
 data class ExamResponse(override val data: List<ExamData>?) : BaseResponse<List<ExamResponse.ExamData>>() {
     data class ExamData(
         val createdAt: String,
@@ -8,7 +12,39 @@ data class ExamResponse(override val data: List<ExamData>?) : BaseResponse<List<
         val questions: List<QuestionData>?,
         val subject: SubjectData?,
         val title: String
-    )
+    ) {
+        fun toExamModel(): ExamModel {
+            return ExamModel(
+                createdAt = this.createdAt,
+                id = this.id,
+                durationSeconds = this.durationSeconds,
+                title = this.title,
+                questions = this.questions?.map { q ->
+                    QuestionModel(
+                        content = q.content,
+                        contentImage = q.contentImage,
+                        correctAnswer = q.correctAnswer,
+                        explanation = q.explanation,
+                        explanationImage = q.explanationImage,
+                        id = q.id,
+                        optionA = q.optionA,
+                        optionB = q.optionB,
+                        optionC = q.optionC,
+                        optionD = q.optionD,
+                        subject = SubjectModel(
+                            id = q.subject?.id ?: 0,
+                            nameSubject = q.subject?.nameSubject ?: ""
+                        ),
+                        answer = null
+                    )
+                },
+                subject = SubjectModel(
+                    id = this.subject?.id ?: 0,
+                    nameSubject = this.subject?.nameSubject ?: ""
+                )
+            )
+        }
+    }
 
     data class QuestionData(
         val content: String?,
