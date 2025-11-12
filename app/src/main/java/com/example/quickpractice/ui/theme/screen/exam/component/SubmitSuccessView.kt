@@ -4,13 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -18,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +30,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.Grey99
 import com.example.quickpractice.ui.theme.Red
@@ -119,10 +124,7 @@ fun SubmitSuccessView(examResult: ExamResultModel) {
             )
         }
 
-        Text(
-            "Chia sẻ bài làm",
-            color = Color.White,
-            fontSize = 14.sp,
+        Row(
             modifier = Modifier
                 .indication(interactionSource, rememberRipple())
                 .padding(top = 20.dp)
@@ -135,8 +137,24 @@ fun SubmitSuccessView(examResult: ExamResultModel) {
                 }
                 .background(Green, shape = RoundedCornerShape(8.dp))
                 .padding(vertical = 10.dp),
-            textAlign = TextAlign.Center
-        )
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically) {
+
+            Icon(
+                painter = painterResource(R.drawable.ic_share), contentDescription = "share",
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(20.dp),
+                tint = Color.White
+            )
+
+            Text(
+                "Chia sẻ bài làm",
+                color = Color.White,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
