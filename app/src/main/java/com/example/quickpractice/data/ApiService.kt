@@ -1,6 +1,7 @@
 package com.example.quickpractice.data
 
 import com.example.quickpractice.data.dto.ExamResultRequest
+import com.example.quickpractice.data.response.ExamHistoryResponse
 import com.example.quickpractice.data.response.ExamResponse
 import com.example.quickpractice.data.response.ExamResultResponse
 import com.example.quickpractice.data.response.SubjectResponse
@@ -23,4 +24,9 @@ interface ApiService {
     suspend fun addExamResult(
         @Body examResultRequest: ExamResultRequest
     ): Response<ExamResultResponse>
+
+    @GET("exam_history")
+    suspend fun getExamHistory(
+        @Query("examResultId") examResultId: Int
+    ): Response<ExamHistoryResponse>
 }

@@ -1,5 +1,7 @@
 package com.example.quickpractice.di
 
+import com.example.quickpractice.data.repository.ExamHistoryRepository
+import com.example.quickpractice.data.repository.ExamHistoryRepositoryImpl
 import com.example.quickpractice.data.repository.ExamRepository
 import com.example.quickpractice.data.repository.ExamRepositoryImpl
 import com.example.quickpractice.data.repository.SubjectRepository
@@ -25,4 +27,10 @@ abstract class RepositoryModule {
     abstract fun bindExamRepository(
         examRepositoryImpl: ExamRepositoryImpl
     ) : ExamRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExamHistoryRepository(
+        examHistoryRepositoryImpl: ExamHistoryRepositoryImpl
+    ) : ExamHistoryRepository
 }

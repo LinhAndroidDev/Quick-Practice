@@ -1,5 +1,6 @@
 package com.example.quickpractice.data.response
 
+import com.example.quickpractice.ui.theme.screen.exam.model.Choice
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.ui.theme.screen.exam.model.SubjectModel
@@ -35,7 +36,7 @@ data class ExamResponse(override val data: List<ExamData>?) : BaseResponse<List<
                             id = q.subject?.id ?: 0,
                             nameSubject = q.subject?.nameSubject ?: ""
                         ),
-                        answer = null
+                        answer = if (q.answer == null || q.answer == -1) null else Choice.fromValue(q.answer)
                     )
                 },
                 subject = SubjectModel(
@@ -57,7 +58,8 @@ data class ExamResponse(override val data: List<ExamData>?) : BaseResponse<List<
         val optionB: String,
         val optionC: String,
         val optionD: String,
-        val subject: SubjectData?
+        val subject: SubjectData?,
+        val answer: Int?,
     )
 
     data class SubjectData(
