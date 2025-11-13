@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
@@ -27,8 +28,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quickpractice.ui.theme.GreyLight
+import com.example.quickpractice.ui.theme.component.ShadowCommon
 import com.example.quickpractice.ui.theme.screen.exam_history.component.ItemExamHistory
 import com.example.quickpractice.util.clickView
+import com.example.quickpractice.util.shadowCommon
 
 @Composable
 fun ExamHistoryScreen(navController: NavController, viewModel: ExamHistoryViewModel = hiltViewModel()) {
@@ -47,7 +50,7 @@ fun ExamHistoryScreen(navController: NavController, viewModel: ExamHistoryViewMo
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(top = 20.dp, bottom = 10.dp),
+                .padding(top = 20.dp, bottom = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -68,9 +71,13 @@ fun ExamHistoryScreen(navController: NavController, viewModel: ExamHistoryViewMo
             )
         }
 
-        LazyColumn(modifier = Modifier.padding(top = 10.dp)) {
-            items(examHistories) { examHistory ->
-                ItemExamHistory(examHistory)
+        ShadowCommon()
+
+        LazyColumn {
+            itemsIndexed(examHistories) { index, examHistory ->
+                Column(modifier = Modifier.padding(top = if (index == 0) 10.dp else 0.dp)) {
+                    ItemExamHistory(examHistory)
+                }
             }
         }
     }
