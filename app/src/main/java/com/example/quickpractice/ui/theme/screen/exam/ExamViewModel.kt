@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.quickpractice.data.repository.ExamRepository
+import com.example.quickpractice.ui.theme.screen.exam.argument.ExamArgument
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
+import com.example.quickpractice.ui.theme.screen.exam.model.ExamType
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,11 +31,15 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
     var exam: ExamModel? = null
     private val _state = MutableStateFlow<ApiState>(ApiState.Idle())
     val state = _state.asStateFlow()
+    private val _examType: MutableStateFlow<ExamType> = MutableStateFlow(ExamType.PRACTICE)
+    val examType = _examType.asStateFlow()
 
     fun getArgument(navController: NavController) {
-        exam = navController.previousBackStackEntry
+        val examArgument = navController.previousBackStackEntry
             ?.savedStateHandle
-            ?.get<ExamModel>("exam")
+            ?.get<ExamArgument>("exam")
+        exam = examArgument?.exam
+        _examType.value = examArgument?.type ?: ExamType.PRACTICE
         _questions.value = exam?.questions
         _durationSeconds.value = exam?.durationSeconds ?: 0
     }

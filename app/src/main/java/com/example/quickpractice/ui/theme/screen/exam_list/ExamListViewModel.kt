@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.quickpractice.data.repository.ExamRepository
 import com.example.quickpractice.ui.theme.navigation.Route
+import com.example.quickpractice.ui.theme.screen.exam.argument.ExamArgument
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
+import com.example.quickpractice.ui.theme.screen.exam.model.ExamType
 import com.example.quickpractice.ui.theme.screen.home.model.SubjectModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +42,7 @@ class ExamListViewModel @Inject constructor(private val examRepository: ExamRepo
     fun goToExam(navController: NavController, exam: ExamModel) {
         navController.currentBackStackEntry
             ?.savedStateHandle
-            ?.set("exam", exam)
+            ?.set("exam", ExamArgument(exam, ExamType.PRACTICE))
         navController.navigate(Route.EXAM.route)
     }
 }

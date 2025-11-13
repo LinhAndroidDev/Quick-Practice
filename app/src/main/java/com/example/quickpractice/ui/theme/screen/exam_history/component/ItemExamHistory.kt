@@ -43,7 +43,7 @@ import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
 import com.example.quickpractice.util.DateUtils
 
 @Composable
-fun ItemExamHistory(examHistory: ExamResultModel) {
+fun ItemExamHistory(examHistory: ExamResultModel, seeAgainTap: (Int) -> Unit) {
     val (hour, date) = DateUtils.getHourDate(examHistory.submittedAt)
     val sizeResult = 14.sp
     Row(modifier = Modifier
@@ -156,7 +156,7 @@ fun ItemExamHistory(examHistory: ExamResultModel) {
             FooterView(
                 leftTitle = "Xem lại",
                 rightTitle = "Học câu sai",
-                leftTap = { },
+                leftTap = { seeAgainTap.invoke(examHistory.id) },
                 rightTap = {
 
                 })

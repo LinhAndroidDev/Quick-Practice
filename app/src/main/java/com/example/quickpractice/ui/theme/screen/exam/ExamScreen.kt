@@ -25,6 +25,7 @@ import com.example.quickpractice.ui.theme.component.AnimatedLoading
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestion
 import com.example.quickpractice.ui.theme.screen.exam.component.LastPageView
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
+import com.example.quickpractice.ui.theme.screen.exam.model.ExamType
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 
 private const val MAX_ITEM_PER_PAGE = 3
@@ -36,11 +37,14 @@ private const val MAX_ITEM_PER_PAGE = 3
  */
 @Composable
 fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltViewModel()) {
+    val examType = viewModel.examType.collectAsState().value
+    var examTypeState by remember { mutableStateOf(examType) }
     var questionsState by remember { mutableStateOf<List<QuestionModel>>(listOf()) }
     val questions = viewModel.questions.collectAsState().value ?: listOf()
     val extraPage = if (questionsState.size % MAX_ITEM_PER_PAGE == 0) 0 else 1
+    val lastPage = if (examTypeState == ExamType.PRACTICE) 1 else 0
     val pagerState =
-        rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage + 1 })
+        rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage + lastPage })
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     var examResultState by remember { mutableStateOf<ExamResultModel?>(null) }
@@ -74,10 +78,15 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
         questionsState = questions
     }
 
+    LaunchedEffect(examType) {
+        examTypeState = examType
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             HeaderExam(
                 navController = navController,
+                examTypeState,
                 pageState = pagerState,
                 viewModel.durationSeconds.collectAsState().value,
                 questionsState,
@@ -95,9 +104,9 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                     .weight(1f)
                     .fillMaxWidth()
             ) { page ->
-                if (page < pagerState.pageCount - 1) {
+                if (page < pagerState.pageCount - 1 || examTypeState == ExamType.HISTORY) {
                     val count =
-                        if (page == pagerState.pageCount - 2 && questionsState.size % MAX_ITEM_PER_PAGE != 0) {
+                        if (page == pagerState.pageCount - 1 - lastPage && questionsState.size % MAX_ITEM_PER_PAGE != 0) {
                             questionsState.size % MAX_ITEM_PER_PAGE
                         } else {
                             3
@@ -105,15 +114,20 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(count) { index ->
                             val position = index + page * MAX_ITEM_PER_PAGE
-                            ItemQuestion(questionsState[position], onUpdateQuestion = { q ->
-                                questionsState = questionsState.toMutableList().also {
-                                    it[position] = q
-                                }
-                            }, onUpdateExpand = {
-                                questionsState = questionsState.toMutableList().also {
-                                    it[position] = it[position].copy(expand = !it[position].expand)
-                                }
-                            })
+                            ItemQuestion(
+                                questionsState[position],
+                                isHistory = examType == ExamType.HISTORY,
+                                onUpdateQuestion = { q ->
+                                    questionsState = questionsState.toMutableList().also {
+                                        it[position] = q
+                                    }
+                                },
+                                onUpdateExpand = {
+                                    questionsState = questionsState.toMutableList().also {
+                                        it[position] =
+                                            it[position].copy(expand = !it[position].expand)
+                                    }
+                                })
                         }
                     }
                 } else {

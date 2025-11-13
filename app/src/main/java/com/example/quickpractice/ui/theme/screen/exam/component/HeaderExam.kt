@@ -27,6 +27,7 @@ import com.example.quickpractice.ui.theme.Orange
 import com.example.quickpractice.ui.theme.Red
 import com.example.quickpractice.ui.theme.screen.exam.component.dialog.DialogConfirmSave
 import com.example.quickpractice.ui.theme.screen.exam.component.dialog.DialogListQuestion
+import com.example.quickpractice.ui.theme.screen.exam.model.ExamType
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
 import com.example.quickpractice.util.clickView
 import com.example.quickpractice.util.getTimerFormat
@@ -35,6 +36,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun HeaderExam(
     navController: NavController,
+    examType: ExamType,
     pageState: PagerState,
     duration: Int,
     questionsState: List<QuestionModel>,
@@ -45,7 +47,7 @@ fun HeaderExam(
     var showDialogConfirmSave by remember { mutableStateOf(false) }
     var showDialogListQuestionPreview by remember { mutableStateOf(false) }
     val currentPage = if (pageState.currentPage == pageState.pageCount - 1) {
-        "Trang cuối"
+        ""
     } else {
         "Trang ${pageState.currentPage + 1}"
     }
@@ -55,6 +57,7 @@ fun HeaderExam(
     }
 
     LaunchedEffect(key1 = timeLeft) {
+        if (examType == ExamType.HISTORY) return@LaunchedEffect
         if (timeLeft > 0) {
             delay(1000)
             timeLeft--
@@ -91,21 +94,27 @@ fun HeaderExam(
             textAlign = TextAlign.Center
         )
 
-        Icon(
-            painter = painterResource(R.drawable.ic_timer), contentDescription = "list",
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .size(20.dp),
-            tint = Orange
-        )
+        if (examType == ExamType.PRACTICE) {
+            Row(
+                verticalAlignment = CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_timer), contentDescription = "list",
+                    modifier = Modifier
+                        .padding(start = 20.dp)
+                        .size(20.dp),
+                    tint = Orange
+                )
 
-        Text(
-            getTimerFormat(timeLeft),
-            color = Red,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(start = 5.dp)
-        )
+                Text(
+                    getTimerFormat(timeLeft),
+                    color = Red,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.padding(start = 5.dp)
+                )
+            }
+        }
 
         Icon(
             painter = painterResource(R.drawable.ic_setting), contentDescription = "list",

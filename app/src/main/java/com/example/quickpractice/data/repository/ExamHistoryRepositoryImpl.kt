@@ -15,7 +15,7 @@ class ExamHistoryRepositoryImpl @Inject constructor(private val apiService: ApiS
 
     override suspend fun getExamHistory(examResultId: Int): Response<ExamModel> {
         val examHistoryResponse = apiService.getExamHistory(examResultId)
-        val examHistory = examHistoryResponse.body()?.data?.toExamModel()
+        val examHistory = examHistoryResponse.body()?.data?.examResult?.toExamModel()
         return Response.success(examHistory)
     }
 
