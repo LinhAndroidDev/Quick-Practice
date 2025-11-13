@@ -34,6 +34,7 @@ import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.Grey99
 import com.example.quickpractice.ui.theme.Red
+import com.example.quickpractice.ui.theme.component.MultiSegmentProgressBar
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
 import com.example.quickpractice.ui.theme.screen.exam.model.SubjectModel

@@ -30,6 +30,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.GreyEF
+import com.example.quickpractice.ui.theme.component.FooterView
 import com.example.quickpractice.ui.theme.screen.exam.component.ItemQuestionPreview
 import com.example.quickpractice.ui.theme.component.ShadowCommon
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
@@ -86,66 +87,15 @@ fun DialogListQuestion(
                 }
             }
 
-            FooterView(dismiss = { onDismiss.invoke() }, submit = {
-                onDismiss.invoke()
-                onSubmit.invoke()
-            })
+            FooterView(
+                leftTitle = "Huỷ",
+                rightTitle = "Nộp",
+                leftTap = { onDismiss.invoke() },
+                rightTap = {
+                    onDismiss.invoke()
+                    onSubmit.invoke()
+                }, padding = 10.dp)
         }
-    }
-}
-
-@Composable
-private fun FooterView(dismiss: () -> Unit = {}, submit: () -> Unit = {}) {
-    val is1 = remember { MutableInteractionSource() }
-    val is2 = remember { MutableInteractionSource() }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                Color.White, shape = RoundedCornerShape(
-                    bottomStart = 8.dp,
-                    bottomEnd = 8.dp
-                )
-            )
-            .padding(10.dp)
-    ) {
-        Text(
-            "Huỷ",
-            color = Green,
-            fontSize = 14.sp,
-            modifier = Modifier
-                .padding(end = 10.dp)
-                .indication(is1, rememberRipple())
-                .weight(1f)
-                .clickable(
-                    interactionSource = is1,
-                    indication = null
-                ) {
-                    dismiss.invoke()
-                }
-                .background(Color.White, shape = RoundedCornerShape(8.dp))
-                .border(width = 1.dp, color = Green, shape = RoundedCornerShape(8.dp))
-                .padding(vertical = 10.dp),
-            textAlign = TextAlign.Center,
-        )
-
-        Text(
-            "Nộp ",
-            color = Color.White,
-            fontSize = 14.sp,
-            modifier = Modifier
-                .indication(is2, rememberRipple())
-                .weight(1f)
-                .clickable(
-                    interactionSource = is2,
-                    indication = null
-                ) {
-                    submit.invoke()
-                }
-                .background(Green, shape = RoundedCornerShape(8.dp))
-                .padding(vertical = 10.dp),
-            textAlign = TextAlign.Center
-        )
     }
 }
 

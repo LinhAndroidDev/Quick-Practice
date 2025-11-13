@@ -31,4 +31,8 @@ class HomeViewModel @Inject constructor(private val subjectRepository: SubjectRe
             ?.set("subject", subjectModel)
         navController.navigate(Route.EXAM_LIST.route)
     }
+
+    fun goToExamHistory(navController: NavController) {
+        navController.navigate(Route.EXAM_HISTORY.route)
+    }
 }

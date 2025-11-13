@@ -4,6 +4,7 @@ import com.example.quickpractice.data.dto.ExamResultRequest
 import com.example.quickpractice.data.response.ExamHistoryResponse
 import com.example.quickpractice.data.response.ExamResponse
 import com.example.quickpractice.data.response.ExamResultResponse
+import com.example.quickpractice.data.response.ListExamHistoryResponse
 import com.example.quickpractice.data.response.SubjectResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -24,6 +25,9 @@ interface ApiService {
     suspend fun addExamResult(
         @Body examResultRequest: ExamResultRequest
     ): Response<ExamResultResponse>
+
+    @GET("exam_result/get_exam_results")
+    suspend fun getExamHistories(): Response<ListExamHistoryResponse>
 
     @GET("exam_history")
     suspend fun getExamHistory(
