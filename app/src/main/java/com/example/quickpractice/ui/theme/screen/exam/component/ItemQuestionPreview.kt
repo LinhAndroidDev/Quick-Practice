@@ -23,10 +23,16 @@ import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.screen.exam.model.Choice
 import com.example.quickpractice.ui.theme.screen.exam.model.Correct
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
+import com.example.quickpractice.util.clickView
 
 @Composable
-fun ItemQuestionPreview(question: QuestionModel) {
-    Row(modifier = Modifier.padding(bottom = 15.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+fun ItemQuestionPreview(question: QuestionModel, onClick: () -> Unit) {
+    Row(modifier = Modifier
+        .padding(bottom = 15.dp)
+        .fillMaxWidth()
+        .clickView {
+            onClick.invoke()
+        }, verticalAlignment = Alignment.CenterVertically) {
         val answers = question.getAnswers()
         Text(
             "${question.id}.",

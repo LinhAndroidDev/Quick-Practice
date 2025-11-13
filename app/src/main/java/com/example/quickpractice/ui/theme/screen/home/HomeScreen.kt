@@ -64,11 +64,10 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .size(25.dp)
+                    .align(alignment = Alignment.CenterEnd)
                     .clickView {
                         viewModel.goToExamHistory(navController)
-                    }
-                    .padding(end = 15.dp)
-                    .align(alignment = Alignment.CenterEnd),
+                    },
                 tint = Color.Black
             )
         }

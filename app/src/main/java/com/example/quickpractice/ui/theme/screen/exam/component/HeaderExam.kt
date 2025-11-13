@@ -41,7 +41,8 @@ fun HeaderExam(
     duration: Int,
     questionsState: List<QuestionModel>,
     onFinished: () -> Unit = {},
-    onSubmit: () -> Unit = {}
+    onSubmit: () -> Unit = {},
+    onTabQuestion: (Int) -> Unit = {},
 ) {
     var timeLeft by remember { mutableIntStateOf(0) }
     var showDialogConfirmSave by remember { mutableStateOf(false) }
@@ -76,11 +77,11 @@ fun HeaderExam(
         Icon(
             painter = painterResource(R.drawable.ic_save), contentDescription = "Save",
             modifier = Modifier
-                .size(18.dp)
+                .padding(start = 10.dp, end = 15.dp)
+                .size(25.dp)
                 .clickView {
                     showDialogConfirmSave = true
-                }
-                .padding(start = 10.dp, end = 15.dp),
+                },
             tint = Color.Black
         )
 
@@ -127,11 +128,11 @@ fun HeaderExam(
         Icon(
             painter = painterResource(R.drawable.ic_list), contentDescription = "list",
             modifier = Modifier
+                .padding(start = 20.dp, end = 10.dp)
                 .size(25.dp)
                 .clickView {
                     showDialogListQuestionPreview = true
-                }
-                .padding(start = 20.dp, end = 10.dp),
+                },
             tint = Color.Black
         )
     }
@@ -146,7 +147,12 @@ fun HeaderExam(
         }
     )
 
-    DialogListQuestion(showDialog = showDialogListQuestionPreview, onDismiss = {
-        showDialogListQuestionPreview = false
-    }, onSubmit = { onSubmit.invoke() }, questionsState)
+    DialogListQuestion(
+        showDialog = showDialogListQuestionPreview,
+        onDismiss = {
+            showDialogListQuestionPreview = false
+        },
+        onSubmit = { onSubmit.invoke() },
+        questionsState,
+        onTapQuestion = { index -> onTabQuestion.invoke(index) })
 }

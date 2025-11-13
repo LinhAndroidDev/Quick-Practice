@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,6 +50,7 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
     val context = LocalContext.current
     var examResultState by remember { mutableStateOf<ExamResultModel?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var pageCurrent by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(state) {
         when (state) {
@@ -82,6 +84,10 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
         examTypeState = examType
     }
 
+    LaunchedEffect(pageCurrent) {
+        pagerState.animateScrollToPage(pageCurrent)
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             HeaderExam(
@@ -95,6 +101,15 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                 },
                 onFinished = {
 
+                },
+                onTabQuestion = { index ->
+                    val lastPage = if ((index + 1) % MAX_ITEM_PER_PAGE != 0) 1 else 0
+                    val position = (index + 1) / MAX_ITEM_PER_PAGE + lastPage
+                    if (examType == ExamType.PRACTICE) {
+                        pageCurrent = position - 1
+                    } else {
+                        pageCurrent = position
+                    }
                 }
             )
 

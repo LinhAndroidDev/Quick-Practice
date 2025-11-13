@@ -24,7 +24,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.quickpractice.ui.theme.Green
 import com.example.quickpractice.ui.theme.GreyEF
-import com.example.quickpractice.ui.theme.Red
 import com.example.quickpractice.util.clickView
 
 @Composable
@@ -69,12 +68,11 @@ fun DialogConfirmSave(
                             fontWeight = FontWeight.W500,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .background(color = Red)
+                                .fillMaxHeight()
+                                .weight(1f)
                                 .clickView {
                                     onDismiss.invoke()
                                 }
-                                .fillMaxHeight()
-                                .weight(1f)
                                 .padding(vertical = 12.dp)
                         )
 
@@ -89,13 +87,12 @@ fun DialogConfirmSave(
                             fontWeight = FontWeight.W500,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .background(color = Red)
+                                .fillMaxHeight()
+                                .weight(1f)
                                 .clickView {
                                     onDismiss.invoke()
                                     onConfirm.invoke()
                                 }
-                                .fillMaxHeight()
-                                .weight(1f)
                                 .padding(vertical = 12.dp))
                     }
                 }

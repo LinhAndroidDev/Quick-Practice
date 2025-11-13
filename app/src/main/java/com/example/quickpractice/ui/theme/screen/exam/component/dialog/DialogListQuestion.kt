@@ -41,6 +41,7 @@ fun DialogListQuestion(
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
     questionsState: List<QuestionModel>,
+    onTapQuestion: (Int) -> Unit,
 ) {
     if (!showDialog) return
     Dialog(
@@ -73,7 +74,10 @@ fun DialogListQuestion(
             ) {
                 itemsIndexed(questionsState) { index, item ->
                     Column {
-                        ItemQuestionPreview(item)
+                        ItemQuestionPreview(item) {
+                            onDismiss.invoke()
+                            onTapQuestion.invoke(index)
+                        }
                         if (index > 0 && index < questionsState.size - 1 && (index + 1) % 3 == 0) {
                             Box(
                                 modifier = Modifier
@@ -106,6 +110,7 @@ fun DialogListQuestionPreview() {
         showDialog = true,
         onDismiss = {},
         onSubmit = {},
-        questionsState = listOf()
+        questionsState = listOf(),
+        onTapQuestion = {}
     )
 }

@@ -22,7 +22,7 @@ import com.example.quickpractice.ui.theme.Grey
 @Composable
 fun Modifier.clickView(onClick: () -> Unit): Modifier {
     val interactionSource = remember { MutableInteractionSource() }
-    return Modifier
+    return this
         .indication(interactionSource, rememberRipple())
         .clickable(
             interactionSource = interactionSource,

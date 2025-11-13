@@ -77,7 +77,7 @@ fun ExamHistoryScreen(navController: NavController, viewModel: ExamHistoryViewMo
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(top = 20.dp, bottom = 20.dp),
+                    .padding(vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(

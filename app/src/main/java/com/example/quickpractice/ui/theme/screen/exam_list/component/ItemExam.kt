@@ -32,7 +32,7 @@ fun ItemExam(exam: ExamModel, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.White)
+            .clip(RoundedCornerShape(15.dp))
             .clickView { onClick() },
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
