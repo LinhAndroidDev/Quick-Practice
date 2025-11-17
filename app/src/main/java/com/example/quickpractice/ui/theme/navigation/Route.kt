@@ -1,6 +1,7 @@
 package com.example.quickpractice.ui.theme.navigation
 
 enum class Route(val route: String) {
+    Login("login"),
     HOME("home"),
     EXAM_LIST("exam_list"),
     EXAM("exam"),

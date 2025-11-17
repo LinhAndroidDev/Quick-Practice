@@ -1,21 +1,21 @@
 package com.example.quickpractice.util
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
 import com.example.quickpractice.ui.theme.Grey
 
 @SuppressLint("ModifierFactoryUnreferencedReceiver")
@@ -44,23 +44,23 @@ fun Modifier.shadowCommon() : Modifier {
     )
 }
 
+@SuppressLint("RememberInComposition")
 @Composable
-fun SvgImage(url: String) {
-    val context = LocalContext.current
-    val imageLoader = ImageLoader.Builder(context)
-        .components {
-            add(SvgDecoder.Factory())
-        }
-        .build()
+fun UnFocusKeyBoardView(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    val focusManager = LocalFocusManager.current
 
-    AsyncImage(
-        model = ImageRequest.Builder(context)
-            .data(url)
-            .crossfade(true)
-            .build(),
-        imageLoader = imageLoader,
-        contentDescription = null
-    )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null
+            ) {
+                focusManager.clearFocus() // ➜ Ẩn bàn phím
+            }) {
+        content.invoke()
+    }
 }
 
 @SuppressLint("DefaultLocale")
