@@ -12,13 +12,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,67 +38,92 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.screen.home.component.ItemSubject
+import com.example.quickpractice.ui.theme.screen.home.component.dialog.LogoutConfirmDialog
 import com.example.quickpractice.util.clickView
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
     val subjects = viewModel.subjects.collectAsState().value ?: listOf()
+    var showLogout by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchSubjects()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White)
-    ) {
-        Box {
-            Text(
-                text = "Thi Trắc Nghiệm",
-                color = Color.Black,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.W600,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-                textAlign = TextAlign.Center
-            )
-
-            Icon(
-                painter = painterResource(R.drawable.ic_history), contentDescription = "list",
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(25.dp)
-                    .align(alignment = Alignment.CenterEnd)
-                    .clickView {
-                        viewModel.goToExamHistory(navController)
-                    },
-                tint = Color.Black
-            )
-        }
-
-        Text(
-            text = "Chủ đề", color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.W500,
-            modifier = Modifier
-                .padding(start = 15.dp, top = 8.dp),
-            textAlign = TextAlign.Start
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2), // 👉 Mỗi hàng có 2 item
+    Box {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+                .background(color = Color.White)
         ) {
-            items(subjects) { item ->
-                ItemSubject(item) {
-                    viewModel.goToExamList(navController, item)
+            Box {
+                Icon(
+                    Icons.Default.ExitToApp, contentDescription = "list",
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .size(25.dp)
+                        .rotate(90f)
+                        .align(alignment = Alignment.CenterStart)
+                        .clickView {
+                            showLogout = true
+                        },
+                    tint = Color.Black
+                )
+
+                Text(
+                    text = "Thi Trắc Nghiệm",
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.W600,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp),
+                    textAlign = TextAlign.Center
+                )
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_history), contentDescription = "list",
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(25.dp)
+                        .align(alignment = Alignment.CenterEnd)
+                        .clickView {
+                            viewModel.goToExamHistory(navController)
+                        },
+                    tint = Color.Black
+                )
+            }
+
+            Text(
+                text = "Chủ đề", color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.W500,
+                modifier = Modifier
+                    .padding(start = 15.dp, top = 8.dp),
+                textAlign = TextAlign.Start
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), // 👉 Mỗi hàng có 2 item
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                items(subjects) { item ->
+                    ItemSubject(item) {
+                        viewModel.goToExamList(navController, item)
+                    }
                 }
             }
+        }
+
+        if (showLogout) {
+            LogoutConfirmDialog(onConfirm = {
+                viewModel.goToLogin(navController)
+            }, onDismiss = {
+                showLogout = false
+            })
         }
     }
 }
