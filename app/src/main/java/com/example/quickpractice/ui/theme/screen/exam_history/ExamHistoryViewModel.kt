@@ -9,6 +9,7 @@ import com.example.quickpractice.ui.theme.screen.exam.argument.ExamArgument
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamType
+import com.example.quickpractice.util.SharePreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,8 +30,11 @@ class ExamHistoryViewModel @Inject constructor(private val repository: ExamHisto
     private val _state = MutableStateFlow<ApiStateExamHistory>(ApiStateExamHistory.Idle())
     val state = _state.asStateFlow()
 
+    @Inject
+    lateinit var shared: SharePreferenceRepository
+
     suspend fun fetchExamHistories() {
-        val response = repository.getExamHistories()
+        val response = repository.getExamHistories(shared.getUserId())
         if (response.isSuccessful) {
             _examHistories.value = response.body()
         } else {

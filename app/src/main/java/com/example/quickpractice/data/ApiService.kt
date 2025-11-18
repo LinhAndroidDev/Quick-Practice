@@ -29,7 +29,7 @@ interface ApiService {
     ): Response<ExamResultResponse>
 
     @GET("exam_result/get_exam_results")
-    suspend fun getExamHistories(): Response<ListExamHistoryResponse>
+    suspend fun getExamHistories(@Query("userId") userId: Int): Response<ListExamHistoryResponse>
 
     @GET("exam_history")
     suspend fun getExamHistory(

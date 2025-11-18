@@ -7,8 +7,8 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class ExamHistoryRepositoryImpl @Inject constructor(private val apiService: ApiService) : ExamHistoryRepository {
-    override suspend fun getExamHistories(): Response<List<ExamResultModel>> {
-        val examHistoriesResponse = apiService.getExamHistories()
+    override suspend fun getExamHistories(userId: Int): Response<List<ExamResultModel>> {
+        val examHistoriesResponse = apiService.getExamHistories(userId = userId)
         val examHistories = examHistoriesResponse.body()?.data?.map { it.toExamResultModel() }
         return Response.success(examHistories)
     }
