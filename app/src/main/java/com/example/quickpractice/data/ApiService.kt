@@ -1,10 +1,12 @@
 package com.example.quickpractice.data
 
 import com.example.quickpractice.data.dto.ExamResultRequest
+import com.example.quickpractice.data.dto.LoginRequest
 import com.example.quickpractice.data.response.ExamHistoryResponse
 import com.example.quickpractice.data.response.ExamResponse
 import com.example.quickpractice.data.response.ExamResultResponse
 import com.example.quickpractice.data.response.ListExamHistoryResponse
+import com.example.quickpractice.data.response.LoginResponse
 import com.example.quickpractice.data.response.SubjectResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -33,4 +35,9 @@ interface ApiService {
     suspend fun getExamHistory(
         @Query("examResultId") examResultId: Int
     ): Response<ExamHistoryResponse>
+
+    @POST("auth/login")
+    suspend fun login(
+        @Body loginRequest: LoginRequest
+    ) : Response<LoginResponse>
 }

@@ -1,5 +1,7 @@
 package com.example.quickpractice.di
 
+import com.example.quickpractice.data.repository.AuthRepository
+import com.example.quickpractice.data.repository.AuthRepositoryImpl
 import com.example.quickpractice.data.repository.ExamHistoryRepository
 import com.example.quickpractice.data.repository.ExamHistoryRepositoryImpl
 import com.example.quickpractice.data.repository.ExamRepository
@@ -33,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindExamHistoryRepository(
         examHistoryRepositoryImpl: ExamHistoryRepositoryImpl
     ) : ExamHistoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ) : AuthRepository
 }

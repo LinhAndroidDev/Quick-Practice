@@ -10,6 +10,7 @@ import com.example.quickpractice.ui.theme.screen.exam_list.ExamListScreen
 import com.example.quickpractice.ui.theme.screen.home.HomeScreen
 import com.example.quickpractice.ui.theme.screen.login.LoginScreen
 import com.example.quickpractice.ui.theme.screen.register.RegisterScreen
+import com.example.quickpractice.ui.theme.screen.splash.SplashScreen
 
 @Composable
 fun AppNavigation() {
@@ -17,8 +18,9 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = Route.Register.route
+        startDestination = Route.Splash.route
     ) {
+        composable(Route.Splash.route) { SplashScreen(navController) }
         composable(Route.Login.route) { LoginScreen(navController) }
         composable(Route.Register.route) { RegisterScreen(navController) }
         composable(Route.HOME.route) { HomeScreen(navController) }

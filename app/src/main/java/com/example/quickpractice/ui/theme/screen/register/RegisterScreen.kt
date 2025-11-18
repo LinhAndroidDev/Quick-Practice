@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quickpractice.R
+import com.example.quickpractice.ui.theme.BlueBB
 import com.example.quickpractice.util.UnFocusKeyBoardView
 import com.example.quickpractice.util.clickView
 
@@ -51,7 +52,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
     UnFocusKeyBoardView {
         Text(
             "Tạo tài khoản",
-            color = Color(0xFF1F41BB),
+            color = BlueBB,
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.seriftext_regular, FontWeight.Normal)),
@@ -144,8 +145,8 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
                 .padding(start = 15.dp, end = 15.dp, top = 15.dp)
                 .fillMaxWidth(),
             colors = ButtonColors(
-                containerColor = Color(0xFF1F41BB),
-                contentColor = Color(0xFF1F41BB),
+                containerColor = BlueBB,
+                contentColor = BlueBB,
                 disabledContainerColor = Color.Gray,
                 disabledContentColor = Color.LightGray
             ),
@@ -172,7 +173,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
 
             Text(
                 "Đăng nhập",
-                color = Color(0xFF1F41BB),
+                color = BlueBB,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 fontStyle = FontStyle.Italic,
