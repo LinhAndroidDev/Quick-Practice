@@ -1,6 +1,5 @@
 package com.example.quickpractice.ui.theme.screen.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -38,21 +37,17 @@ class LoginViewModel @Inject constructor(private val authRepository: AuthReposit
             if (response.isSuccessful) {
                 val loginModel = response.body()
                 if (loginModel?.role == 1) {
-                    Log.e("LoginViewModel", "login: success" )
                     shared.saveToken(loginModel.auth?.accessToken ?: "")
                     shared.saveUserId(loginModel.userId ?: 0)
                     shared.saveUserName(loginModel.username ?: "")
                     _state.value = LoginState.Success(loginModel)
                 } else {
-                    Log.e("LoginViewModel", "Account does not have access" )
                     _state.value = LoginState.Failure("Account does not have access, please try another account")
                 }
             } else {
-                Log.e("LoginViewModel", "Login failed" )
                 _state.value = LoginState.Failure("Login failed: ${response.message()}")
             }
         } catch (e: Exception) {
-            Log.e("LoginViewModel", e.message.toString() )
             _state.value = LoginState.Failure(e.message ?: "An unexpected error occurred")
         }
     }

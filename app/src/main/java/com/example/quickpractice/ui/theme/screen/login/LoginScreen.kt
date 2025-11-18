@@ -1,7 +1,6 @@
 package com.example.quickpractice.ui.theme.screen.login
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.text.font.Font
 import androidx.compose.foundation.layout.PaddingValues
@@ -59,7 +58,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             }
 
             is LoginState.Success -> {
-                Log.e("LoginViewModel", "LoginState.Success" )
                 isLoading = false
                 viewModel.goToHome(navController)
             }
