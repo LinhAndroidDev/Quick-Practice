@@ -1,6 +1,5 @@
 package com.example.quickpractice.ui.theme.screen.register
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,6 +43,7 @@ import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.BlueBB
 import com.example.quickpractice.ui.theme.component.AnimatedLoading
 import com.example.quickpractice.ui.theme.component.dialog.ApiErrorDialog
+import com.example.quickpractice.ui.theme.component.dialog.ApiSuccessDialog
 import com.example.quickpractice.util.UnFocusKeyBoardView
 import com.example.quickpractice.util.clickView
 
@@ -58,20 +58,20 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
     val state = viewModel.state.collectAsState().value
     var isLoading by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    var showDialogSuccess by remember { mutableStateOf(false) }
 
     LaunchedEffect(state) {
         when (state) {
-            is LoginState.Loading -> {
+            is RegisterState.Loading -> {
                 isLoading = true
             }
 
-            is LoginState.Success -> {
+            is RegisterState.Success -> {
                 isLoading = false
-                Toast.makeText(context, "Đăng ký thành công!", Toast.LENGTH_LONG).show()
+                showDialogSuccess = true
             }
 
-            is LoginState.Failure -> {
+            is RegisterState.Failure -> {
                 isLoading = false
                 showError = true
             }
@@ -247,9 +247,15 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
 
         if (showError) {
             ApiErrorDialog(
-                errorMessage = (state as LoginState.Failure).message,
+                errorMessage = (state as RegisterState.Failure).message,
                 onDismiss = { showError = false }
             )
+        }
+
+        if (showDialogSuccess) {
+            ApiSuccessDialog(successMessage = "Đăng ký thành công!") {
+                showDialogSuccess = false
+            }
         }
     }
 }

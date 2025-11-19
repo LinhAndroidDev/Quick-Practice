@@ -45,7 +45,7 @@ class LoginViewModel @Inject constructor(private val authRepository: AuthReposit
                     _state.value = LoginState.Failure("Account does not have access, please try another account")
                 }
             } else {
-                _state.value = LoginState.Failure("Login failed: ${response.message()}")
+                _state.value = LoginState.Failure("Login failed: ${response.errorBody()?.string()}")
             }
         } catch (e: Exception) {
             _state.value = LoginState.Failure(e.message ?: "An unexpected error occurred")

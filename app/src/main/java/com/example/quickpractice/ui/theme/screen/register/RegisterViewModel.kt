@@ -11,17 +11,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class LoginState {
-    class Success(val data: RegisterResponse.RegisterData) : LoginState()
-    class Failure(val message: String) : LoginState()
-    class Loading() : LoginState()
-    class Idle : LoginState()
+sealed class RegisterState {
+    class Success(val data: RegisterResponse.RegisterData) : RegisterState()
+    class Failure(val message: String) : RegisterState()
+    class Loading() : RegisterState()
+    class Idle : RegisterState()
 }
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(private val authRepository: AuthRepository) :
     ViewModel() {
-    private val _state: MutableStateFlow<LoginState> = MutableStateFlow(LoginState.Idle())
+    private val _state: MutableStateFlow<RegisterState> = MutableStateFlow(RegisterState.Idle())
     val state = _state.asStateFlow()
 
     fun register(
@@ -30,7 +30,7 @@ class RegisterViewModel @Inject constructor(private val authRepository: AuthRepo
         password: String,
         confirmPassword: String,
     ) = viewModelScope.launch {
-        _state.value = LoginState.Loading()
+        _state.value = RegisterState.Loading()
         try {
             val registerRequest = RegisterRequest(
                 name = username,
@@ -43,16 +43,16 @@ class RegisterViewModel @Inject constructor(private val authRepository: AuthRepo
             if (response.isSuccessful) {
                 val registerResponse = response.body()
                 if (registerResponse?.data?.userId != 0) {
-                    _state.value = LoginState.Success(registerResponse?.data!!)
+                    _state.value = RegisterState.Success(registerResponse?.data!!)
                 } else {
                     _state.value =
-                        LoginState.Failure(registerResponse.message ?: "Registration failed")
+                        RegisterState.Failure(registerResponse.message ?: "Registration failed")
                 }
             } else {
-                _state.value = LoginState.Failure("Registration failed: ${response.message()}")
+                _state.value = RegisterState.Failure("Registration failed: ${response.body()?.message}")
             }
         } catch (e: Exception) {
-            _state.value = LoginState.Failure(e.message ?: "An unexpected error occurred")
+            _state.value = RegisterState.Failure(e.message ?: "An unexpected error occurred")
         }
     }
 }

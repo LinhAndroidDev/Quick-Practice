@@ -24,20 +24,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.quickpractice.R
+import com.example.quickpractice.ui.theme.Green
 
 @Composable
-fun ApiErrorDialog(
-    errorMessage: String,
+fun ApiSuccessDialog(
+    successMessage: String,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(24.dp)
                 .background(Color.White, RoundedCornerShape(20.dp))
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -45,28 +46,28 @@ fun ApiErrorDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                // 🔥 Icon cảnh báo
+                // 🎉 Icon thành công
                 Image(
-                    painter = painterResource(R.drawable.image_fail),
+                    painter = painterResource(R.drawable.image_done),
                     contentDescription = null,
                     modifier = Modifier.size(48.dp)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // 🔥 Tiêu đề
+                // 🎉 Tiêu đề
                 Text(
-                    text = "Lỗi API",
+                    text = "Thành công",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFD32F2F)
+                    color = Green // xanh lá tươi
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 🔥 Nội dung lỗi
+                // 🎉 Nội dung thông báo
                 Text(
-                    text = errorMessage,
+                    text = successMessage,
                     color = Color.DarkGray,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
@@ -74,11 +75,11 @@ fun ApiErrorDialog(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 🔥 Nút OK style đẹp
+                // 🎉 Nút OK (style đẹp)
                 Button(
                     onClick = onDismiss,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFD32F2F)
+                        containerColor = Green // xanh lá
                     ),
                     shape = RoundedCornerShape(50)
                 ) {
@@ -88,4 +89,3 @@ fun ApiErrorDialog(
         }
     }
 }
-

@@ -115,8 +115,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
-                placeholder = { Text("Password") },
+                label = { Text("Mật khẩu") },
+                placeholder = { Text("Mật khẩu") },
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
                 modifier = Modifier
