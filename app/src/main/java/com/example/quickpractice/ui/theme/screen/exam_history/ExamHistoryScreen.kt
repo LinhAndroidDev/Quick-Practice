@@ -45,20 +45,21 @@ fun ExamHistoryScreen(navController: NavController, viewModel: ExamHistoryViewMo
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchExamHistories()
-    }
-
     LaunchedEffect(examHistoryState) {
         when(examHistoryState) {
             is ApiStateExamHistory.Loading -> {
                 isLoading = true
             }
 
-            is ApiStateExamHistory.Success -> {}
+            is ApiStateExamHistory.Success -> {
+                isLoading = false
+                viewModel.resetState()
+            }
 
             is ApiStateExamHistory.Failure -> {
+                isLoading = false
                 Toast.makeText(context, examHistoryState.message, Toast.LENGTH_SHORT).show()
+                viewModel.resetState()
             }
 
             else -> {

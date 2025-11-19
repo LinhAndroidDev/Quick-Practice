@@ -1,6 +1,8 @@
 package com.example.quickpractice.ui.theme.screen.register
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,154 +42,213 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quickpractice.R
 import com.example.quickpractice.ui.theme.BlueBB
+import com.example.quickpractice.ui.theme.component.AnimatedLoading
+import com.example.quickpractice.ui.theme.component.dialog.ApiErrorDialog
 import com.example.quickpractice.util.UnFocusKeyBoardView
 import com.example.quickpractice.util.clickView
 
 @Composable
 fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var confirmPassword by remember { mutableStateOf("") }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
+    val state = viewModel.state.collectAsState().value
+    var isLoading by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    UnFocusKeyBoardView {
-        Text(
-            "Tạo tài khoản",
-            color = BlueBB,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.seriftext_regular, FontWeight.Normal)),
-            modifier = Modifier
-                .padding(top = 40.dp)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            "Tạo một tài khoản để bạn có thể khám phá tất cả các tính năng hiện có",
-            color = Color.Black,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W500,
-            modifier = Modifier
-                .padding(top = 26.dp, start = 30.dp, end = 30.dp)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            placeholder = { Text("Email") },
-            shape = RoundedCornerShape(8.dp),
-            singleLine = true,
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp, top = 20.dp)
-                .fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            placeholder = { Text("Password") },
-            shape = RoundedCornerShape(8.dp),
-            singleLine = true,
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                .fillMaxWidth(),
-            visualTransformation = if (isPasswordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-
-            trailingIcon = {
-                val icon = if (isPasswordVisible)
-                    painterResource(R.drawable.ic_visibility)
-                else
-                    painterResource(R.drawable.ic_visibility_off)
-
-                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                    Icon(painter = icon, contentDescription = null)
-                }
+    LaunchedEffect(state) {
+        when (state) {
+            is LoginState.Loading -> {
+                isLoading = true
             }
-        )
 
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
-            placeholder = { Text("Confirm Password") },
-            shape = RoundedCornerShape(8.dp),
-            singleLine = true,
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp, top = 10.dp)
-                .fillMaxWidth(),
-            visualTransformation = if (isConfirmPasswordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-
-            trailingIcon = {
-                val icon = if (isConfirmPasswordVisible)
-                    painterResource(R.drawable.ic_visibility)
-                else
-                    painterResource(R.drawable.ic_visibility_off)
-
-                IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
-                    Icon(painter = icon, contentDescription = null)
-                }
+            is LoginState.Success -> {
+                isLoading = false
+                Toast.makeText(context, "Đăng ký thành công!", Toast.LENGTH_LONG).show()
             }
-        )
 
-        Button(
-            onClick = {},
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp, top = 15.dp)
-                .fillMaxWidth(),
-            colors = ButtonColors(
-                containerColor = BlueBB,
-                contentColor = BlueBB,
-                disabledContainerColor = Color.Gray,
-                disabledContentColor = Color.LightGray
-            ),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(vertical = 15.dp),
-        ) {
-            Text("Đăng Kí", color = Color.White, fontSize = 16.sp)
+            is LoginState.Failure -> {
+                isLoading = false
+                showError = true
+            }
+
+            else -> {
+                isLoading = false
+            }
         }
+    }
 
-        Row(
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    Box {
+        UnFocusKeyBoardView {
             Text(
-                "Đã có tài khoản",
-                color = Color.Black,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W500,
+                "Tạo tài khoản",
+                color = BlueBB,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.seriftext_regular, FontWeight.Normal)),
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
 
             Text(
-                "Đăng nhập",
-                color = BlueBB,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                fontStyle = FontStyle.Italic,
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    textDecoration = TextDecoration.Underline
-                ),
+                "Tạo một tài khoản để bạn có thể khám phá tất cả các tính năng hiện có",
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
                 modifier = Modifier
-                    .padding(start = 3.dp)
-                    .clickView {
+                    .padding(top = 26.dp, start = 30.dp, end = 30.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
 
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Tên") },
+                placeholder = { Text("Tên") },
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                    .fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                placeholder = { Text("Email") },
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                    .fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Mật khẩu") },
+                placeholder = { Text("Mật khẩu") },
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                    .fillMaxWidth(),
+                visualTransformation = if (isPasswordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+
+                trailingIcon = {
+                    val icon = if (isPasswordVisible)
+                        painterResource(R.drawable.ic_visibility)
+                    else
+                        painterResource(R.drawable.ic_visibility_off)
+
+                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                        Icon(painter = icon, contentDescription = null)
                     }
+                }
+            )
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Confirm Password") },
+                placeholder = { Text("Confirm Password") },
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                    .fillMaxWidth(),
+                visualTransformation = if (isConfirmPasswordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+
+                trailingIcon = {
+                    val icon = if (isConfirmPasswordVisible)
+                        painterResource(R.drawable.ic_visibility)
+                    else
+                        painterResource(R.drawable.ic_visibility_off)
+
+                    IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
+                        Icon(painter = icon, contentDescription = null)
+                    }
+                }
+            )
+
+            Button(
+                onClick = {
+                    viewModel.register(
+                        username = name,
+                        email = email,
+                        password = password,
+                        confirmPassword = confirmPassword
+                    )
+                },
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                    .fillMaxWidth(),
+                colors = ButtonColors(
+                    containerColor = BlueBB,
+                    contentColor = BlueBB,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.LightGray
+                ),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(vertical = 15.dp),
+            ) {
+                Text("Đăng Kí", color = Color.White, fontSize = 16.sp)
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Đã có tài khoản",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    "Đăng nhập",
+                    color = BlueBB,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    modifier = Modifier
+                        .padding(start = 3.dp)
+                        .clickView {
+                            navController.popBackStack()
+                        }
+                )
+            }
+        }
+
+        AnimatedLoading(isLoading)
+
+        if (showError) {
+            ApiErrorDialog(
+                errorMessage = (state as LoginState.Failure).message,
+                onDismiss = { showError = false }
             )
         }
     }

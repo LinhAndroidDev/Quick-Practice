@@ -52,6 +52,10 @@ class LoginViewModel @Inject constructor(private val authRepository: AuthReposit
         }
     }
 
+    fun resetState() {
+        _state.value = LoginState.Idle()
+    }
+
     fun goToRegister(navController: NavController) {
         navController.navigate(Route.Register.route)
     }

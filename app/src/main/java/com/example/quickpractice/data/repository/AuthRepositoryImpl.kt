@@ -2,6 +2,8 @@ package com.example.quickpractice.data.repository
 
 import com.example.quickpractice.data.ApiService
 import com.example.quickpractice.data.dto.LoginRequest
+import com.example.quickpractice.data.dto.RegisterRequest
+import com.example.quickpractice.data.response.RegisterResponse
 import com.example.quickpractice.ui.theme.screen.login.model.LoginModel
 import retrofit2.Response
 import javax.inject.Inject
@@ -11,6 +13,10 @@ class AuthRepositoryImpl @Inject constructor(private val apiService: ApiService)
         val loginResponse = apiService.login(loginRequest)
         val loginModel = loginResponse.body()?.data?.toLoginModel()
         return Response.success(loginModel)
+    }
+
+    override suspend fun register(registerRequest: RegisterRequest): Response<RegisterResponse> {
+        return apiService.register(registerRequest)
     }
 
 }

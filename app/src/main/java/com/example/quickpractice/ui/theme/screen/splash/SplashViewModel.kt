@@ -23,7 +23,7 @@ class SplashViewModel @Inject constructor() : ViewModel() {
 
     private fun goToLogin(navController: NavController) {
         navController.navigate(Route.Login.route) {
-            popUpTo(Route.Login.route) {
+            popUpTo(Route.Splash.route) {
                 inclusive = true
             }
         }
@@ -31,7 +31,7 @@ class SplashViewModel @Inject constructor() : ViewModel() {
 
     private fun goToHome(navController: NavController) {
         navController.navigate(Route.HOME.route) {
-            popUpTo(Route.Login.route) {
+            popUpTo(Route.Splash.route) {
                 inclusive = true
             }
         }

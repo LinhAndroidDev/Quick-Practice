@@ -2,11 +2,13 @@ package com.example.quickpractice.data
 
 import com.example.quickpractice.data.dto.ExamResultRequest
 import com.example.quickpractice.data.dto.LoginRequest
+import com.example.quickpractice.data.dto.RegisterRequest
 import com.example.quickpractice.data.response.ExamHistoryResponse
 import com.example.quickpractice.data.response.ExamResponse
 import com.example.quickpractice.data.response.ExamResultResponse
 import com.example.quickpractice.data.response.ListExamHistoryResponse
 import com.example.quickpractice.data.response.LoginResponse
+import com.example.quickpractice.data.response.RegisterResponse
 import com.example.quickpractice.data.response.SubjectResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -40,4 +42,9 @@ interface ApiService {
     suspend fun login(
         @Body loginRequest: LoginRequest
     ) : Response<LoginResponse>
+
+    @POST("auth/register")
+    suspend fun register(
+        @Body registerRequest: RegisterRequest
+    ) : Response<RegisterResponse>
 }

@@ -20,6 +20,8 @@ class ExamListViewModel @Inject constructor(private val examRepository: ExamRepo
     val exams = _exams.asStateFlow()
     private val _title: MutableStateFlow<String> = MutableStateFlow("")
     val title = _title.asStateFlow()
+    var isLoaded = false
+        private set
 
     private suspend fun fetchExams(subjectId: Int) {
         val response = examRepository.getExams(subjectId)
@@ -31,6 +33,8 @@ class ExamListViewModel @Inject constructor(private val examRepository: ExamRepo
     }
 
     suspend fun getArgument(navController: NavController) {
+        if (isLoaded) return
+        isLoaded = true
         val subject = navController.previousBackStackEntry
             ?.savedStateHandle
             ?.get<SubjectModel>("subject")

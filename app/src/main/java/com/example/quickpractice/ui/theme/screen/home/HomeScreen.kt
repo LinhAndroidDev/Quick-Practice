@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,10 +44,6 @@ import com.example.quickpractice.util.clickView
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
     val subjects = viewModel.subjects.collectAsState().value ?: listOf()
     var showLogout by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchSubjects()
-    }
 
     Box {
         Column(

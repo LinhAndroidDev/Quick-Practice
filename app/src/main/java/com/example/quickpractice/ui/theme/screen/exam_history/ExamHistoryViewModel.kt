@@ -24,16 +24,20 @@ sealed class ApiStateExamHistory {
 }
 
 @HiltViewModel
-class ExamHistoryViewModel @Inject constructor(private val repository: ExamHistoryRepository) : ViewModel() {
+class ExamHistoryViewModel @Inject constructor(
+    private val repository: ExamHistoryRepository,
+    private val shared: SharePreferenceRepository
+) : ViewModel() {
     private val _examHistories: MutableStateFlow<List<ExamResultModel>?> = MutableStateFlow(null)
     val examHistories = _examHistories.asStateFlow()
     private val _state = MutableStateFlow<ApiStateExamHistory>(ApiStateExamHistory.Idle())
     val state = _state.asStateFlow()
 
-    @Inject
-    lateinit var shared: SharePreferenceRepository
+    init {
+        fetchExamHistories()
+    }
 
-    suspend fun fetchExamHistories() {
+    private fun fetchExamHistories() = viewModelScope.launch {
         val response = repository.getExamHistories(shared.getUserId())
         if (response.isSuccessful) {
             _examHistories.value = response.body()
@@ -56,9 +60,11 @@ class ExamHistoryViewModel @Inject constructor(private val repository: ExamHisto
             }
         } catch (e: Exception) {
             _state.value = ApiStateExamHistory.Failure(e.message.toString())
-        } finally {
-            _state.value = ApiStateExamHistory.Idle()
         }
+    }
+
+    fun resetState() {
+        _state.value = ApiStateExamHistory.Idle()
     }
 
     private fun goToExam(navController: NavController, exam: ExamModel) {
