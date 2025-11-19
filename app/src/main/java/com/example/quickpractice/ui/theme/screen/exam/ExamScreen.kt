@@ -51,6 +51,8 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
     var examResultState by remember { mutableStateOf<ExamResultModel?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var pageCurrent by remember { mutableIntStateOf(0) }
+    val isSubmitted = viewModel.isSubmitted.collectAsState().value
+    var isSubmittedState by remember { mutableStateOf(isSubmitted) }
 
     LaunchedEffect(state) {
         when (state) {
@@ -88,6 +90,10 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
         pagerState.animateScrollToPage(pageCurrent)
     }
 
+    LaunchedEffect(isSubmitted) {
+        isSubmittedState = isSubmitted
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             HeaderExam(
@@ -96,6 +102,7 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                 pageState = pagerState,
                 viewModel.durationSeconds.collectAsState().value,
                 questionsState,
+                isSubmitted = isSubmitted || examTypeState == ExamType.HISTORY,
                 onSubmit = {
                     viewModel.submitExam(questionsState)
                 },
@@ -105,10 +112,10 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                 onTabQuestion = { index ->
                     val lastPage = if ((index + 1) % MAX_ITEM_PER_PAGE != 0) 1 else 0
                     val position = (index + 1) / MAX_ITEM_PER_PAGE + lastPage
-                    if (examType == ExamType.PRACTICE) {
-                        pageCurrent = position - 1
+                    pageCurrent = if (examType == ExamType.PRACTICE) {
+                        position - 1
                     } else {
-                        pageCurrent = position
+                        position
                     }
                 }
             )
@@ -131,7 +138,7 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                             val position = index + page * MAX_ITEM_PER_PAGE
                             ItemQuestion(
                                 questionsState[position],
-                                isHistory = examType == ExamType.HISTORY,
+                                isHistory = examType == ExamType.HISTORY || isSubmittedState,
                                 onUpdateQuestion = { q ->
                                     questionsState = questionsState.toMutableList().also {
                                         it[position] = q

@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +42,7 @@ fun HeaderExam(
     pageState: PagerState,
     duration: Int,
     questionsState: List<QuestionModel>,
+    isSubmitted: Boolean = false,
     onFinished: () -> Unit = {},
     onSubmit: () -> Unit = {},
     onTabQuestion: (Int) -> Unit = {},
@@ -71,19 +74,31 @@ fun HeaderExam(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
-            .padding(vertical = 20.dp),
+            .padding(vertical = if (isSubmitted) 0.dp else 20.dp),
         verticalAlignment = CenterVertically
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_save), contentDescription = "Save",
-            modifier = Modifier
-                .padding(start = 10.dp, end = 15.dp)
-                .size(25.dp)
-                .clickView {
-                    showDialogConfirmSave = true
-                },
-            tint = Color.Black
-        )
+        if (isSubmitted) {
+            Icon(
+                Icons.Filled.KeyboardArrowLeft, contentDescription = "Back",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clickView {
+                        navController.popBackStack()
+                    }
+                    .padding(start = 10.dp, end = 15.dp),
+            )
+        } else {
+            Icon(
+                painter = painterResource(R.drawable.ic_save), contentDescription = "Save",
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 15.dp)
+                    .size(25.dp)
+                    .clickView {
+                        showDialogConfirmSave = true
+                    },
+                tint = Color.Black
+            )
+        }
 
         Text(
             text = currentPage,

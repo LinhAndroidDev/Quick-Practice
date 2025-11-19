@@ -9,6 +9,7 @@ import com.example.quickpractice.ui.theme.screen.exam.model.ExamModel
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamResultModel
 import com.example.quickpractice.ui.theme.screen.exam.model.ExamType
 import com.example.quickpractice.ui.theme.screen.exam.model.QuestionModel
+import com.example.quickpractice.util.SharePreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +34,11 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
     val state = _state.asStateFlow()
     private val _examType: MutableStateFlow<ExamType> = MutableStateFlow(ExamType.PRACTICE)
     val examType = _examType.asStateFlow()
+    private val _isSubmitted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSubmitted = _isSubmitted.asStateFlow()
+
+    @Inject
+    lateinit var shared: SharePreferenceRepository
 
     fun getArgument(navController: NavController) {
         val examArgument = navController.previousBackStackEntry
@@ -47,7 +53,7 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
     fun submitExam(questions: List<QuestionModel>) = viewModelScope.launch {
         val examResultRequest = QuestionModel.toExamResultRequest(
             examId = exam?.id ?: 0,
-            userId = 3,
+            userId = shared.getUserId(),
             questions = questions
         )
         _state.value = ApiState.Loading()
@@ -56,6 +62,7 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
             if (result.isSuccessful) {
                 val responseBody = result.body()
                 _state.value = ApiState.Success(responseBody)
+                _isSubmitted.value = true
             } else {
                 _state.value = ApiState.Failure("Failed to submit exam result.")
             }
