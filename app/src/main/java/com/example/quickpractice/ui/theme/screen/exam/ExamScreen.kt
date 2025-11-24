@@ -39,31 +39,44 @@ private const val MAX_ITEM_PER_PAGE = 3
 @Composable
 fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltViewModel()) {
     val examType = viewModel.examType.collectAsState().value
-    var examTypeState by remember { mutableStateOf(examType) }
-    var questionsState by remember { mutableStateOf<List<QuestionModel>>(listOf()) }
     val questions = viewModel.questions.collectAsState().value ?: listOf()
-    val extraPage = if (questionsState.size % MAX_ITEM_PER_PAGE == 0) 0 else 1
-    val lastPage = if (examTypeState == ExamType.PRACTICE) 1 else 0
-    val pagerState =
-        rememberPagerState(pageCount = { questionsState.size / MAX_ITEM_PER_PAGE + extraPage + lastPage })
     val state by viewModel.state.collectAsState()
+    val isSubmitted = viewModel.isSubmitted.collectAsState().value
     val context = LocalContext.current
+    
+    var questionsState by remember { mutableStateOf<List<QuestionModel>>(listOf()) }
     var examResultState by remember { mutableStateOf<ExamResultModel?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var pageCurrent by remember { mutableIntStateOf(0) }
-    val isSubmitted = viewModel.isSubmitted.collectAsState().value
-    var isSubmittedState by remember { mutableStateOf(isSubmitted) }
+    
+    // Calculate page count based on questionsState
+    val extraPage = if (questionsState.size % MAX_ITEM_PER_PAGE == 0) 0 else 1
+    val lastPage = if (examType == ExamType.PRACTICE) 1 else 0
+    val pageCount = if (questionsState.isEmpty()) 1 else {
+        questionsState.size / MAX_ITEM_PER_PAGE + extraPage + lastPage
+    }
+    val pagerState = rememberPagerState(pageCount = { pageCount }, initialPage = 0)
+
+    LaunchedEffect(Unit) {
+        viewModel.getArgument(navController)
+    }
+
+    LaunchedEffect(questions) {
+        questionsState = questions
+    }
 
     LaunchedEffect(state) {
         when (state) {
             is ApiState.Success -> {
                 isLoading = false
                 examResultState = (state as ApiState.Success).data
+                viewModel.resetState()
             }
 
             is ApiState.Failure -> {
                 isLoading = false
                 Toast.makeText(context, (state as ApiState.Failure).message, Toast.LENGTH_SHORT).show()
+                viewModel.resetState()
             }
 
             is ApiState.Loading -> {
@@ -74,35 +87,21 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getArgument(navController)
-    }
-
-    LaunchedEffect(questions) {
-        questionsState = questions
-    }
-
-    LaunchedEffect(examType) {
-        examTypeState = examType
-    }
-
     LaunchedEffect(pageCurrent) {
-        pagerState.animateScrollToPage(pageCurrent)
-    }
-
-    LaunchedEffect(isSubmitted) {
-        isSubmittedState = isSubmitted
+        if (pageCurrent >= 0 && pageCurrent < pagerState.pageCount) {
+            pagerState.animateScrollToPage(pageCurrent)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             HeaderExam(
                 navController = navController,
-                examTypeState,
+                examType,
                 pageState = pagerState,
                 viewModel.durationSeconds.collectAsState().value,
                 questionsState,
-                isSubmitted = isSubmitted || examTypeState == ExamType.HISTORY,
+                isSubmitted = isSubmitted || examType == ExamType.HISTORY,
                 onSubmit = {
                     viewModel.submitExam(questionsState)
                 },
@@ -110,13 +109,9 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
 
                 },
                 onTabQuestion = { index ->
-                    val lastPage = if ((index + 1) % MAX_ITEM_PER_PAGE != 0) 1 else 0
-                    val position = (index + 1) / MAX_ITEM_PER_PAGE + lastPage
-                    pageCurrent = if (examType == ExamType.PRACTICE) {
-                        position - 1
-                    } else {
-                        position
-                    }
+                    if (index < 0 || index >= questionsState.size) return@HeaderExam
+                    val pageForIndex = index / MAX_ITEM_PER_PAGE
+                    pageCurrent = pageForIndex
                 }
             )
 
@@ -126,19 +121,23 @@ fun ExamScreen(navController: NavController, viewModel: ExamViewModel = hiltView
                     .weight(1f)
                     .fillMaxWidth()
             ) { page ->
-                if (page < pagerState.pageCount - 1 || examTypeState == ExamType.HISTORY) {
+                if (page < pagerState.pageCount - 1 || examType == ExamType.HISTORY) {
+                    if (questionsState.isEmpty()) return@HorizontalPager
+                    
                     val count =
                         if (page == pagerState.pageCount - 1 - lastPage && questionsState.size % MAX_ITEM_PER_PAGE != 0) {
                             questionsState.size % MAX_ITEM_PER_PAGE
                         } else {
-                            3
+                            MAX_ITEM_PER_PAGE
                         }
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(count) { index ->
                             val position = index + page * MAX_ITEM_PER_PAGE
+                            if (position >= questionsState.size) return@items
+                            
                             ItemQuestion(
                                 questionsState[position],
-                                isHistory = examType == ExamType.HISTORY || isSubmittedState,
+                                isSubmitted = examType == ExamType.HISTORY || isSubmitted,
                                 onUpdateQuestion = { q ->
                                     questionsState = questionsState.toMutableList().also {
                                         it[position] = q

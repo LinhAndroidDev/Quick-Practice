@@ -35,7 +35,7 @@ import com.example.quickpractice.util.shadowCommon
 @Composable
 fun ItemQuestion(
     question: QuestionModel,
-    isHistory: Boolean = false,
+    isSubmitted: Boolean = false,
     onUpdateExpand: () -> Unit,
     onUpdateQuestion: (QuestionModel) -> Unit
 ) {
@@ -118,7 +118,7 @@ fun ItemQuestion(
                             correct = answers[choice] ?: Correct.NO_ANSWER,
                             content = text,
                             selectChoice = question.answer,
-                            isAnswered = question.isAnswered() || isHistory,
+                            isAnswered = question.isAnswered() || isSubmitted,
                         ) {
                             onUpdateQuestion.invoke(question.copyWith(answer = choice))
                         }

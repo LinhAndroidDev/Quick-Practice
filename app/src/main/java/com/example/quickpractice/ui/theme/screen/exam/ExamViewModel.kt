@@ -70,4 +70,8 @@ class ExamViewModel @Inject constructor(private val examRepository: ExamReposito
             _state.value = ApiState.Failure(e.message.toString())
         }
     }
+
+    fun resetState() {
+        _state.value = ApiState.Idle()
+    }
 }
